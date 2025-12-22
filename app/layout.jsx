@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "مطعم الأصالة",
+  title: "مطبخ ام خاطر",
   description: "أشهى المأكولات العربية التقليدية",
 };
 
