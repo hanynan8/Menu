@@ -10,6 +10,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [clickedItem, setClickedItem] = useState(null);
   const { language } = useLanguage();
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export default function Home() {
   const hero = data.hero[language];
   const heroSlider = data.heroSlider;
   const colors = {
-    primary: "#B8860B",
+    primary: "#DAA520",
     secondary: "#CD853F",
     accent: "#8B4513",
     background: "#1A1410",
@@ -170,16 +171,16 @@ export default function Home() {
             borderColor: colors.accent + '60'
           }}
         >
-          <Star className="w-4 h-4 fill-current animate-pulse" style={{ color: colors.secondary }} />
-          <span className="font-medium" style={{ color: colors.text }}>
+          <Star className="w-4 h-4 fill-current animate-pulse" style={{ color: 'white' }} />
+          <span className="font-medium" style={{ color: 'white' }}>
             {slide[language].badge}
           </span>
         </div>
         
         {/* العنوان الرئيسي */}
         <h1 
-          className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight drop-shadow-2xl"
-          style={{ color: colors.secondary }}
+        className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent w-full mb-2 leading-tight drop-shadow-2xl pb-5"
+          // style={{ color: colors.secondary }}
         >
           {slide[language].title}
         </h1>
@@ -264,7 +265,7 @@ export default function Home() {
   >
     <div className="relative">
       {/* Glow effect */}
-      {/* <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div> */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
       
       {/* Button */}
       <div 
@@ -290,7 +291,7 @@ export default function Home() {
   >
     <div className="relative">
       {/* Glow effect */}
-      {/* <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-amber-400 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div> */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-amber-400 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
       
       {/* Button */}
       <div 
@@ -328,7 +329,7 @@ export default function Home() {
   </div>
 </div>
       {/* Restaurant Info */}
-      {/* <div className="text-white py-12 border-y-4" style={{ backgroundColor: colors.primary, borderColor: colors.secondary + '66' }}>
+      <div id='about' className="text-white py-12 border-y-4" style={{ backgroundColor: 'rgb(34 31 22)', borderColor: colors.secondary + '66' }}>
         <div className="container mx-auto px-6">
           <div className="text-center">
             <h2 className="text-5xl font-black mb-4" style={{ color: colors.text }}>{restaurant.name}</h2>
@@ -344,7 +345,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Search and Filter Section */}
       <div className="sticky top-0 z-40 shadow-lg border-b-2" style={{ backgroundColor: colors.cardBg, borderColor: colors.secondary + '80' }}>
@@ -379,7 +380,7 @@ export default function Home() {
             </div>
 
             {/* Category Filter */}
-            <div className={`flex-1 ${language === 'ar' ? 'lg:order-1' : 'lg:order-2'}`}>
+            <div id='menu' className={`flex-1 ${language === 'ar' ? 'lg:order-1' : 'lg:order-2'}`}>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setSelectedCategory('all')}
@@ -430,52 +431,74 @@ export default function Home() {
       </div>
 
       {/* Menu Items Grid */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="relative container mx-auto px-6 py-16">
+        {/* Decorative background pattern */}
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: `repeating-linear-gradient(45deg, ${colors.secondary} 0, ${colors.secondary} 1px, transparent 0, transparent 50%)`,
+            backgroundSize: '15px 15px'
+          }}
+        />
+        <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
           {filteredItems.map(item => (
-            <div
+  <div
               key={item.id}
-              className="group rounded-3xl overflow-hidden shadow-2xl transform hover:-translate-y-3 transition-all duration-500 border-2"
+              className="group rounded-3xl overflow-hidden shadow-2xl transform hover:-translate-y-3 transition-all duration-500 border-2 cursor-pointer"
               style={{ 
                 backgroundColor: colors.cardBg,
-                borderColor: hoveredItem === item.id ? colors.secondary + '99' : colors.accent + '4D'
+                borderColor: (hoveredItem === item.id || clickedItem === item.id) ? colors.secondary + '99' : colors.accent + '4D'
               }}
               onMouseEnter={() => setHoveredItem(item.id)}
               onMouseLeave={() => setHoveredItem(null)}
+              onClick={() => setClickedItem(clickedItem === item.id ? null : item.id)}
             >
               <div className="relative h-72 overflow-hidden">
+                {/* Zoom In + Fade Animation - الصورة تكبر */}
                 <img
-                  src={hoveredItem === item.id && item.hoverImage ? item.hoverImage : item.image}
+                  src={item.image}
                   alt={item[language].name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out"
+                  style={{ 
+                    opacity: ((hoveredItem === item.id || clickedItem === item.id) && item.hoverImage) ? 0 : 1,
+                    transform: ((hoveredItem === item.id || clickedItem === item.id) && item.hoverImage) ? 'scale(1.2)' : 'scale(1)',
+                    zIndex: 1
+                  }}
                 />
-                <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 transition-all duration-500" />
+                {item.hoverImage && (
+                  <img
+                    src={item.hoverImage}
+                    alt={item[language].name}
+                    className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out"
+                    style={{ 
+                      opacity: (hoveredItem === item.id || clickedItem === item.id) ? 1 : 0,
+                      transform: (hoveredItem === item.id || clickedItem === item.id) ? 'scale(1.15)' : 'scale(1)',
+                      zIndex: 2
+                    }}
+                  />
+                )}
+                
+                <div className="absolute inset-0 group-hover:bg-black/20 transition-all duration-500 z-10" />
                 
                 {/* Hover Description Overlay */}
-                <div className="absolute inset-0 flex items-end p-6">
+                <div className="absolute inset-0 flex items-end p-6 z-20">
                   <p className={`text-amber-100 text-sm font-medium leading-relaxed transition-all duration-500 ${
-                    hoveredItem === item.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    (hoveredItem === item.id || clickedItem === item.id) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}>
                     {item[language].hoverDescription}
                   </p>
                 </div>
                 
                 <div 
-                  className={`absolute top-4 ${language === 'ar' ? 'right-4' : 'left-4'} text-white px-5 py-2 rounded-full text-sm font-black shadow-xl border border-amber-400/30`}
+                  className={`absolute top-4 ${language === 'ar' ? 'right-4' : 'left-4'} text-white px-5 py-2 rounded-full text-sm font-black shadow-xl border border-amber-400/30 z-20`}
                   style={{ backgroundColor: colors.primary }}
                 >
                   {item.categoryName}
                 </div>
-                
-                {/* Rating Badge */}
-                <div className={`absolute top-4 ${language === 'ar' ? 'left-4' : 'right-4'} backdrop-blur-sm px-3 py-2 rounded-full flex items-center gap-1 border`} style={{ backgroundColor: colors.cardBg, borderColor: colors.secondary + '4D' }}>
-                  <Star className="w-4 h-4 fill-current" style={{ color: colors.secondary }} />
-                  <span className="font-bold text-sm" style={{ color: colors.secondary }}>4.9</span>
-                </div>
-              </div>
-              
+            </div>
               <div className="p-6">
-                <h3 className="text-2xl font-black mb-3 transition-colors duration-300" style={{ color: hoveredItem === item.id ? colors.text : colors.secondary }}>
+                <h3 className="text-2xl font-black mb-3 transition-all duration-300 bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent">
                   {item[language].name}
                 </h3>
                 <p className="text-sm mb-5 line-clamp-2 leading-relaxed" style={{ color: colors.secondary + 'CC' }}>
@@ -486,7 +509,7 @@ export default function Home() {
                     <span className="text-4xl font-black" style={{ color: colors.secondary }}>{item[language].price}</span>
                     <span className="text-base font-bold" style={{ color: colors.secondary + 'CC' }}>{item[language].currency}</span>
                   </div>
-                  <button className="text-white px-6 py-3 rounded-xl font-black shadow-lg transform hover:scale-110 transition-all duration-300 border" style={{ backgroundColor: colors.primary, borderColor: colors.secondary + '4D' }}>
+                  <button className="text-white px-4 py-2 rounded-xl font-black shadow-lg transform hover:scale-110 transition-all duration-300 border" style={{ backgroundColor: colors.primary, borderColor: colors.secondary + '4D' }}>
                     {t.orderNow}
                   </button>
                 </div>
@@ -504,8 +527,8 @@ export default function Home() {
         )}
       </div>
 
-      {/* Contact Info Footer */}
-      <div className="text-white py-16 border-t-4" style={{ backgroundColor: colors.primary, borderColor: colors.secondary + '66' }}>
+      {/* Contact Info*/}
+      <div id='contact' className="text-white py-16 border-t-4" style={{ backgroundColor: 'rgb(34 31 22)', borderColor: colors.secondary + '66' }}>
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h3 className="text-4xl font-black mb-6" style={{ color: colors.text }}>{t.contactUs}</h3>
@@ -536,15 +559,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Copyright Footer */}
-      <div className="py-6 border-t" style={{ backgroundColor: colors.background, borderColor: colors.accent + '4D' }}>
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-sm" style={{ color: colors.secondary + 'CC' }}>
-            © 2024 {restaurant.name} - {language === 'ar' ? 'جميع الحقوق محفوظة' : 'All Rights Reserved'}
-          </p>
         </div>
       </div>
     </div>

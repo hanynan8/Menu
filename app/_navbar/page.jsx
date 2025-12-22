@@ -24,7 +24,6 @@ const RestaurantNavbar = () => {
         
         const data = await response.json();
         
-        // جرّب أكثر من طريقة لقراءة البيانات
         let navData = null;
         
         if (data.navbar && Array.isArray(data.navbar) && data.navbar.length > 0) {
@@ -54,20 +53,16 @@ const RestaurantNavbar = () => {
     fetchNavbarData();
   }, []);
 
-  // Handle scroll to show/hide navbar
   useEffect(() => {
     const controlNavbar = () => {
       const currentScrollY = window.scrollY;
       
       if (currentScrollY < 10) {
-        // في أعلى الصفحة - دايماً مظهور
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
-        // سكرول لأسفل - إخفاء
         setIsVisible(false);
-        setIsMenuOpen(false); // إغلاق القائمة المحمولة
+        setIsMenuOpen(false);
       } else {
-        // سكرول لأعلى - إظهار
         setIsVisible(true);
       }
       
@@ -105,7 +100,7 @@ const RestaurantNavbar = () => {
 
   return (
     <nav 
-      className={`shadow-lg sticky top-0 z-50 transition-transform duration-300 ${
+      className={`shadow-lg fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
         isVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
       style={{ backgroundColor: styles.background_color }}
@@ -120,18 +115,18 @@ const RestaurantNavbar = () => {
               alt={logo.alt_text}
               width={logo.width}
               height={logo.height}
-              className="rounded-full object-cover"
+              className="rounded-full object-cover shadow-lg"
             />
             <span 
               className="text-xl font-bold"
               style={{ color: styles.text_color }}
             >
-              {logo.name}
+              {language === 'ar' ? logo.name : (logo.name_en || 'Gourmet Restaurant')}
             </span>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-4 space-x-reverse">
+          <div className="hidden md:flex items-center gap-6">
             {menu_items.map((item) => (
               <a
                 key={item.id}
@@ -171,7 +166,7 @@ const RestaurantNavbar = () => {
             </button>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button and Language Toggle */}
           <div className="md:hidden flex items-center gap-2">
             {/* Language Toggle for Mobile */}
             <button

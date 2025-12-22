@@ -2,6 +2,7 @@ import { Rubik, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./_navbar/page.jsx";
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import Footer from "./_footer/page";
 
 const rubik = Rubik({
   variable: "--font-rubik-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
         <LanguageProvider>
           <Navbar />
           {children}
+          <Footer />
         </LanguageProvider>
       </body>
     </html>
