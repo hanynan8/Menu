@@ -9,7 +9,7 @@ export default function Footer() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/data?collection=footer')
+    fetch('https://menu-2ypb.vercel.app/api/data?collection=footer')
       .then(res => res.json())
       .then(result => {
         setFooterData(result[0].footer);

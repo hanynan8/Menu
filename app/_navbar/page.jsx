@@ -16,7 +16,7 @@ const RestaurantNavbar = () => {
     const fetchNavbarData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3000/api/data?collection=navbar');
+        const response = await fetch('https://menu-2ypb.vercel.app/api/data?collection=navbar');
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

@@ -14,7 +14,7 @@ export default function Home() {
   const { language } = useLanguage();
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/data')
+    fetch('https://menu-2ypb.vercel.app/api/data')
       .then(res => res.json())
       .then(result => {
         setData(result.Menu[0]);
