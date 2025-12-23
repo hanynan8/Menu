@@ -1,3 +1,81 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* app/globals.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 2px;
+  transition: width s ease;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1410;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 151, 0, 0.3);
+  border-radius: 0;
+  transition: background 30s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d49700;
+}
+
+::-webkit-scrollbar:hover {
+  width: 10px;
+}
+
+/* Text Selection */
+::selection {
+  background-color: #DAA520;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #DAA520;
+  color: white;
+}
+
+/* Custom Scrollbar for Cart */
+.cart-scrollbar::-webkit-scrollbar {
+  width: 2px;
+}
+
+.cart-scrollbar::-webkit-scrollbar-track {
+  background: #1A1410;
+}
+
+.cart-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(212, 151, 0, 0.3);
+  border-radius: 0;
+}
+
+.cart-scrollbar:hover::-webkit-scrollbar {
+  width: 10px;
+}
+
+.cart-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: #d49700;
+}

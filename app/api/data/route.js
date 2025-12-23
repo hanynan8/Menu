@@ -1,17 +1,12 @@
+// app/api/data/route.js
+
 import mongoose from "mongoose";
 
-/**
- * ----- Mongo connection (cached) -----
- * كل شيء داخل الملف علشان ما تحتاج import خارجي.
- */
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
   console.warn("Warning: MONGO_URI not defined in environment");
 }
 
-/**
- * Use globalThis cache to avoid multiple connections in dev / serverless
- */
 if (!globalThis._mongo) globalThis._mongo = { conn: null, promise: null };
 if (!globalThis._mongoModels) globalThis._mongoModels = {};
 
@@ -32,9 +27,6 @@ async function connectToMongo() {
   return globalThis._mongo.conn;
 }
 
-/**
- * Loose schema to accept any document shape
- */
 const schema = new mongoose.Schema({}, { strict: false });
 
 function normalizeModelName(name) {
@@ -46,7 +38,6 @@ function getModelForCollection(collectionName) {
   if (globalThis._mongoModels[name]) return globalThis._mongoModels[name];
 
   const modelName = normalizeModelName(name);
-  // If a model with this safe name already exists in mongoose.models, reuse it.
   const Model = mongoose.models[modelName] || mongoose.model(modelName, schema, name);
   globalThis._mongoModels[name] = Model;
   return Model;
@@ -55,15 +46,11 @@ function getModelForCollection(collectionName) {
 async function listCollections() {
   await connectToMongo();
   const cols = await mongoose.connection.db.listCollections().toArray();
-  // filter out internal/system collections
   return cols
     .map((c) => c.name)
     .filter((n) => !n.startsWith("system."));
 }
 
-/**
- * Helpers
- */
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -87,12 +74,6 @@ function getSearchParams(request) {
   };
 }
 
-/**
- * GET handler
- * - /api/data                      -> returns all collections (their docs)
- * - /api/data?collection=menu      -> returns all docs in 'menu' (if exists)
- * - /api/data?collection=menu&id=x -> returns specific doc
- */
 export async function GET(request) {
   try {
     await connectToMongo();
@@ -100,7 +81,6 @@ export async function GET(request) {
 
     if (!collection) {
       const colNames = await listCollections();
-      // fetch all docs for each collection (could be large)
       const results = await Promise.all(
         colNames.map(async (name) => {
           const Model = getModelForCollection(name);
@@ -119,7 +99,6 @@ export async function GET(request) {
     const colName = String(collection);
     const existingCols = await listCollections();
     if (!existingCols.includes(colName)) {
-      // If the collection doesn't exist, return 404 to avoid surprising empty responses.
       return jsonResponse({ error: `Collection '${colName}' not found` }, 404);
     }
 
@@ -140,11 +119,6 @@ export async function GET(request) {
   }
 }
 
-/**
- * POST handler
- * - POST /api/data?collection=menu  with JSON body (object or array)
- * Note: POST will create the collection if it doesn't exist yet.
- */
 export async function POST(request) {
   try {
     await connectToMongo();
@@ -168,10 +142,6 @@ export async function POST(request) {
   }
 }
 
-/**
- * PUT handler
- * - PUT /api/data?collection=menu&id=<id> with JSON body
- */
 export async function PUT(request) {
   try {
     await connectToMongo();
@@ -196,10 +166,6 @@ export async function PUT(request) {
   }
 }
 
-/**
- * DELETE handler
- * - DELETE /api/data?collection=menu&id=<id>
- */
 export async function DELETE(request) {
   try {
     await connectToMongo();

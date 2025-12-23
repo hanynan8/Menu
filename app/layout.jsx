@@ -1,35 +1,40 @@
-import { Rubik, Geist_Mono } from "next/font/google";
+// app/layout.jsx
+
+import { Tajawal } from "next/font/google";
 import "./globals.css";
-import Navbar from "./_navbar/page.jsx";
 import { LanguageProvider } from '@/contexts/LanguageContext';
-import Footer from "./_footer/page";
+import { CartProvider, CartNotification } from './components/cart';
+import SessionWrapper from './components/SessionWrapper';
+import Navbar from './components/navbar';
+import Footer from './components/footer';
 
-const rubik = Rubik({
-  variable: "--font-rubik-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const tajawal = Tajawal({
+  weight: ['200', '300', '400', '500', '700', '800', '900'],
+  subsets: ["arabic"],
+  display: "swap",
 });
 
 export const metadata = {
-  title: "مطبخ ام خاطر",
-  description: "أشهى المأكولات العربية التقليدية",
+  title: "مطعم فاخر | Gourmet Restaurant",
+  description: "أفضل مطعم في المدينة | The best restaurant in town",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl">
-      <body
-        className={`${rubik.className} ${geistMono.variable} antialiased`}
-      >
-        <LanguageProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </LanguageProvider>
+      <body className={`${tajawal.className} antialiased`}>
+        <SessionWrapper>
+          <LanguageProvider>
+            <CartProvider>
+              {/* مكون الإشعارات - مهم جداً! */}
+              <CartNotification />
+              
+              <Navbar />
+              {children}
+              <Footer />
+            </CartProvider>
+          </LanguageProvider>
+        </SessionWrapper>
       </body>
     </html>
   );

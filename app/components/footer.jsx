@@ -9,7 +9,7 @@ export default function Footer() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://menu-2ypb.vercel.app/api/data?collection=footer')
+    fetch('http://localhost:3000/api/data?collection=footer')
       .then(res => res.json())
       .then(result => {
         setFooterData(result[0].footer);
@@ -80,22 +80,6 @@ export default function Footer() {
             >
               {footer.about.description}
             </p>
-            {/* Logo or decorative element */}
-            <div 
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border"
-              style={{ 
-                borderColor: colors.secondary + '40',
-                backgroundColor: colors.cardBg
-              }}
-            >
-              <span className="text-2xl">🍽️</span>
-              <span 
-                className="font-bold"
-                style={{ color: colors.secondary }}
-              >
-                مطبخ أم خاطر
-              </span>
-            </div>
           </div>
 
           {/* Quick Links */}
