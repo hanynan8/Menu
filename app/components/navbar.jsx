@@ -99,7 +99,8 @@ const RestaurantNavbar = () => {
     secondary: "#CD853F",
     accent: "#8B4513",
     background: "#1A1410",
-    cardBg: "#2D2420",
+    // cardBg: "#2D2420",
+    cardBg: "rgb(28 17 14)",
     text: "#F5DEB3"
   };
 

@@ -15,8 +15,8 @@ const tajawal = Tajawal({
 });
 
 export const metadata = {
-  title: "مطعم فاخر | Gourmet Restaurant",
-  description: "أفضل مطعم في المدينة | The best restaurant in town",
+  title: "مطبخ ام خاطر | Um Khater Kitchen",
+  description: "أفضل مطبخ في المدينة | The best Kitchen in Dubai",
 };
 
 export default function RootLayout({ children }) {

@@ -9,7 +9,7 @@ export default function Footer() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/data?collection=footer')
+    fetch('/api/data?collection=footer')
       .then(res => res.json())
       .then(result => {
         setFooterData(result[0].footer);
@@ -80,6 +80,8 @@ export default function Footer() {
             >
               {footer.about.description}
             </p>
+            {/* Logo or decorative element */}
+        
           </div>
 
           {/* Quick Links */}

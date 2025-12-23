@@ -548,7 +548,7 @@ export default function Home() {
       </div>
 
       
-<div id='about' className="text-white py-16" style={{ backgroundColor: colors.background }}>
+<div id='about' className="text-white py-16 border-t" style={{ backgroundColor: colors.background, borderColor: colors.accent }}>
   <div className="container mx-auto px-6">
     <div className="text-center max-w-4xl mx-auto">
       <h2 className="text-4xl font-bold mb-3" style={{ color: colors.text }}>
