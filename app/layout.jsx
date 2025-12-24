@@ -5,7 +5,6 @@ import "./globals.css";
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { CartProvider, CartNotification } from './components/cart';
 import SessionWrapper from './components/SessionWrapper';
-import Navbar from './components/navbar';
 import Footer from './components/footer';
 
 const tajawal = Tajawal({
@@ -29,7 +28,6 @@ export default function RootLayout({ children }) {
               {/* مكون الإشعارات - مهم جداً! */}
               <CartNotification />
               
-              <Navbar />
               {children}
               <Footer />
             </CartProvider>

@@ -4,6 +4,8 @@ import { Search, ChevronLeft, ChevronRight, Phone, MapPin, Clock, Star, Shopping
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from './components/cart';
 import { useSession } from 'next-auth/react';
+import Navbar from './components/navbar';
+
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -199,6 +201,8 @@ export default function Home() {
   };
 
   return (
+    <>
+      <Navbar />
     <div className="min-h-screen" style={{ backgroundColor: colors.background }} dir={language === 'ar' ? 'rtl' : 'ltr'}>
       
       <div className="relative h-[700px] overflow-hidden">
@@ -257,7 +261,7 @@ export default function Home() {
                           borderColor: colors.accent + '30'
                         }}
                       >
-                        <span className="relative z-10 flex items-center gap-2">
+                        <span className="relative z-10 flex font-normal items-center gap-2">
                           {hero.cta}
                           <span className={`text-xl transition-transform duration-300 ${language === 'ar' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
                             {language === 'ar' ? '←' : '→'}
@@ -276,10 +280,10 @@ export default function Home() {
                         }}
                       >
                         <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-black" style={{ color: colors.secondary }}>
+                          <span className="text-2xl font-normal font-black" style={{ color: colors.secondary }}>
                             {slide[language].price}
                           </span>
-                          <span className="text-lg font-bold" style={{ color: colors.text }}>
+                          <span className="text-lg font-normal" style={{ color: colors.text }}>
                             {slide[language].currency}
                           </span>
                         </div>
@@ -303,52 +307,53 @@ export default function Home() {
             </div>
           </div>
         ))}
-
-        <button
-          onClick={prevSlide}
-          className={`absolute ${language === 'ar' ? 'left-4 md:left-8' : 'right-4 md:right-8'} top-1/2 -translate-y-1/2 z-30 group`}
-          aria-label={language === 'ar' ? 'الشريحة السابقة' : 'Previous slide'}
-        >
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-            
-            <div 
-              className="relative p-3 md:p-4 rounded-full transition-all duration-300 shadow-2xl group-hover:shadow-amber-500/50 group-hover:scale-110 border-2 border-amber-400/40 backdrop-blur-md"
-              style={{ 
-                background: `linear-gradient(135deg, ${colors.primary}E6, ${colors.secondary}E6)`,
-              }}
-            >
-              <ChevronLeft 
-                size={24} 
-                strokeWidth={3} 
-                className="text-white group-hover:text-amber-100 transition-colors duration-300 md:w-7 md:h-7" 
-              />
-            </div>
+{/* Previous Button - يسار في الإنجليزي، يمين في العربي */}
+      <button
+        onClick={prevSlide}
+        className={`absolute ${language === 'ar' ? 'right-4 md:right-8' : 'left-4 md:left-8'} top-1/2 -translate-y-1/2 z-30 group`}
+        aria-label={language === 'ar' ? 'الشريحة السابقة' : 'Previous slide'}
+      >
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+          
+          <div 
+            className="relative p-3 md:p-4 rounded-full transition-all duration-300 shadow-2xl group-hover:shadow-amber-500/50 group-hover:scale-110 border-2 border-amber-400/40 backdrop-blur-md"
+            style={{ 
+              background: `linear-gradient(135deg, ${colors.primary}E6, ${colors.secondary}E6)`,
+            }}
+          >
+            {language === 'ar' ? (
+              <ChevronRight size={24} strokeWidth={3} className="text-white group-hover:text-amber-100 transition-colors duration-300 md:w-7 md:h-7" />
+            ) : (
+              <ChevronLeft size={24} strokeWidth={3} className="text-white group-hover:text-amber-100 transition-colors duration-300 md:w-7 md:h-7" />
+            )}
           </div>
-        </button>
+        </div>
+      </button>
 
-        <button
-          onClick={nextSlide}
-          className={`absolute ${language === 'ar' ? 'right-4 md:right-8' : 'left-4 md:left-8'} top-1/2 -translate-y-1/2 z-30 group`}
-          aria-label={language === 'ar' ? 'الشريحة التالية' : 'Next slide'}
-        >
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-amber-400 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-            
-            <div 
-              className="relative p-3 md:p-4 rounded-full transition-all duration-300 shadow-2xl group-hover:shadow-amber-500/50 group-hover:scale-110 border-2 border-amber-400/40 backdrop-blur-md"
-              style={{ 
-                background: `linear-gradient(135deg, ${colors.secondary}E6, ${colors.primary}E6)`,
-              }}
-            >
-              <ChevronRight 
-                size={24} 
-                strokeWidth={3} 
-                className="text-white group-hover:text-amber-100 transition-colors duration-300 md:w-7 md:h-7" 
-              />
-            </div>
+      {/* Next Button - يمين في الإنجليزي، يسار في العربي */}
+      <button
+        onClick={nextSlide}
+        className={`absolute ${language === 'ar' ? 'left-4 md:left-8' : 'right-4 md:right-8'} top-1/2 -translate-y-1/2 z-30 group`}
+        aria-label={language === 'ar' ? 'الشريحة التالية' : 'Next slide'}
+      >
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-amber-400 blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+          
+          <div 
+            className="relative p-3 md:p-4 rounded-full transition-all duration-300 shadow-2xl group-hover:shadow-amber-500/50 group-hover:scale-110 border-2 border-amber-400/40 backdrop-blur-md"
+            style={{ 
+              background: `linear-gradient(135deg, ${colors.secondary}E6, ${colors.primary}E6)`,
+            }}
+          >
+            {language === 'ar' ? (
+              <ChevronLeft size={24} strokeWidth={3} className="text-white group-hover:text-amber-100 transition-colors duration-300 md:w-7 md:h-7" />
+            ) : (
+              <ChevronRight size={24} strokeWidth={3} className="text-white group-hover:text-amber-100 transition-colors duration-300 md:w-7 md:h-7" />
+            )}
           </div>
-        </button>
+        </div>
+      </button>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
           {heroSlider.slides.map((_, index) => (
@@ -451,14 +456,39 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Decorative background pattern */}
       <div className="relative container mx-auto px-6 py-16">
-        <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{
-            backgroundImage: `repeating-linear-gradient(45deg, ${colors.secondary} 0, ${colors.secondary} 1px, transparent 0, transparent 50%)`,
-            backgroundSize: '15px 15px'
-          }}
-        />
+{/* استبدل الـ div القديم بهذا */}
+<div className="absolute inset-0 pointer-events-none">
+  <svg
+    className="w-full h-full"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <defs>
+      {/* عدّل width/height لتكبر/تصغر الشبكة */}
+      <pattern id="islamicPattern" width="30" height="30" patternUnits="userSpaceOnUse">
+        <g
+          fill="none"
+          stroke={colors.secondary}      // لون الخط - يستخدم قيمة colors.secondary
+          strokeWidth="2"                // سمك الخط
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* صليب/شكل متقاطع في مركز الخلية */}
+          <path d="M15 4v7 M15 19v7 M4 15h7 M19 15h7" />
+          {/* نقطة/مربع صغير في الوسط للخامة */}
+          <circle cx="15" cy="15" r="2" fill={colors.secondary} />
+        </g>
+      </pattern>
+    </defs>
+
+    {/* مستطيل يملأ العنصر بالنمط — عدّل opacity للشفافية */}
+    <rect width="100%" height="100%" fill="url(#islamicPattern)" opacity="0.12" />
+  </svg>
+</div>
+
         <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
           {filteredItems.map(item => (
@@ -518,7 +548,7 @@ export default function Home() {
     </p>
     <div className="flex items-center justify-between gap-3 mt-auto">
       <div className="flex items-baseline gap-2">
-        <span className="text-3xl font-black" style={{ color: colors.secondary }}>{item[language].price}</span>
+        <span className="text-2xl font-normal font-black" style={{ color: colors.secondary }}>{item[language].price}</span>
         <span className="text-sm font-bold" style={{ color: colors.secondary + 'CC' }}>{item[language].currency}</span>
       </div>
       <button 
@@ -526,11 +556,11 @@ export default function Home() {
           e.stopPropagation();
           handleAddToCart(item);
         }}
-        className="flex items-center gap-2 text-white px-3 py-2 rounded-xl font-bold shadow-lg transform hover:scale-110 transition-all duration-300 border whitespace-nowrap text-sm" 
+        className="flex items-center gap-2 text-white px-2 py-1 rounded-xl font-bold shadow-lg transform hover:scale-110 transition-all duration-300 border whitespace-nowrap text-sm" 
         style={{ backgroundColor: colors.primary, borderColor: colors.secondary + '4D' }}
       >
-        <ShoppingCart size={16} />
-        <span>{t.addToCart}</span>
+        <ShoppingCart size={10} />
+        <span className='text-xs'>{t.addToCart}</span>
       </button>
 </div>
 </div>
@@ -647,5 +677,7 @@ export default function Home() {
   </div>
 </div>
     </div>
+</>
+
   );
 }

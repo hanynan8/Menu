@@ -485,10 +485,8 @@ const Cart = ({ language = 'ar' }) => {
   const cancelLogout = () => { // أضف هنا
     setShowLogoutModal(false);
   };
-
-  const handleCheckout = async () => {
+const handleCheckout = async () => {
     if (!session?.user?.email) {
-      alert(t.loginFirst);
       window.location.href = '/login';
       return;
     }
@@ -511,21 +509,28 @@ const Cart = ({ language = 'ar' }) => {
         return;
       }
 
-      let message = `*طلب جديد من:* ${currentUser.name}\n`;
-      message += `*البريد:* ${currentUser.email}\n`;
-      message += `*الهاتف:* ${currentUser.phone}\n`;
-      message += `*العنوان:* ${currentUser.address}\n`;
-      message += `*طريقة الدفع:* ${currentUser.paymentMethod === 'cash' ? 'كاش' : 'فيزا'}\n\n`;
-      message += `*المنتجات:*\n`;
+      let message = `*🛒 طلب جديد*\n\n`;
+      message += `*📋 معلومات العميل:*\n`;
+      message += `👤 *الاسم:* ${currentUser.name}\n`;
+      message += `📧 *البريد:* ${currentUser.email}\n`;
+      message += `📱 *الهاتف:* ${currentUser.phone}\n`;
+      message += `📍 *العنوان:* ${currentUser.address}\n`;
+      message += `💳 *طريقة الدفع:* ${currentUser.paymentMethod === 'cash' ? 'كاش عند الاستلام 💵' : 'فيزا 💳'}\n\n`;
+      message += `*🛍️ المنتجات:*\n`;
+      message += `━━━━━━━━━━━━━━━━\n`;
       
       cartItems.forEach((item, index) => {
         const price = extractPrice(item.price);
-        message += `${index + 1}. ${item.name} - الكمية: ${item.quantity} - السعر: ${(price * item.quantity).toFixed(2)} ${item.currency || 'درهم'}\n`;
+        const itemTotal = (price * item.quantity).toFixed(2);
+        message += `${index + 1}. *${item.name}*\n`;
+        message += `   📦 الكمية: ${item.quantity}\n`;
+        message += `   💰 السعر: ${itemTotal} ${item.currency || 'درهم'}\n\n`;
       });
       
-      message += `\n*الإجمالي: ${getTotalPrice().toFixed(2)} ${language === 'ar' ? 'درهم' : 'AED'}*`;
+      message += `━━━━━━━━━━━━━━━━\n`;
+      message += `💵 *الإجمالي النهائي: ${getTotalPrice().toFixed(2)} ${language === 'ar' ? 'درهم' : 'AED'}*`;
 
-      const whatsappNumber = '971503456789';
+      const whatsappNumber = '201201061216';
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
 

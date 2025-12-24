@@ -43,7 +43,7 @@ const RestaurantNavbar = () => {
           navData = data[0].navbar;
         }
         
-        if (navData && navData.logo && navData.menu_items) {
+        if (navData && navData.ar && navData.ar.logo && navData.ar.menu_items && navData.en && navData.en.logo && navData.en.menu_items) {
           setNavbarData(navData);
           setError(null);
         } else {
@@ -165,7 +165,7 @@ const RestaurantNavbar = () => {
         style={{ backgroundColor: colors.cardBg }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             <div className="w-32 h-8 animate-pulse rounded" style={{ backgroundColor: colors.accent }}></div>
           </div>
         </div>
@@ -173,7 +173,8 @@ const RestaurantNavbar = () => {
     );
   }
 
-  const { logo, menu_items } = navbarData;
+  const currentLangData = navbarData[language];
+  const { logo, menu_items } = currentLangData;
 
   return (
     <>
@@ -279,29 +280,40 @@ const RestaurantNavbar = () => {
       
       {/* Navbar */}
       <nav 
-        className={`shadow-lg fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        className={`shadow-lg fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out  ${
           isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
         }`}
         style={{ backgroundColor: colors.cardBg }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <img
-                src={logo.image_url}
-                alt={logo.alt_text}
-                width={logo.width || 48}
-                height={logo.height || 48}
-                className="rounded-full object-cover shadow-lg border-2"
-                style={{ borderColor: colors.secondary }}
-              />
+          <div className="flex items-center gap-3">
+              <div 
+                className="rounded-full overflow-hidden shadow-lg border-2 flex items-center justify-center"
+                style={{ 
+                  borderColor: colors.secondary,
+                  width: '65px',
+                  height: '65px'
+                }}
+              >
+                <img
+                  src={logo.image_url}
+                  alt={logo.alt_text}
+                  className="object-cover"
+                  style={{ 
+                    width: '100%',
+                    height: '100%',
+                    transform: 'scale(1.4)'
+                  }}
+                />
+              </div>
               <span 
-                className="text-xl font-bold"
+                className="text-2xl font-bold"
                 style={{ color: colors.text }}
               >
-                {language === 'ar' ? logo.name : (logo.name_en || 'Gourmet Restaurant')}
+                {logo.name}
               </span>
             </div>
 
@@ -327,7 +339,7 @@ const RestaurantNavbar = () => {
                     }
                   }}
                 >
-                  {language === 'ar' ? item.title : item.title_en}
+                  {item.title}
                 </a>
               ))}
               
@@ -492,7 +504,7 @@ const RestaurantNavbar = () => {
                     }}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    {language === 'ar' ? item.title : item.title_en}
+                    {item.title}
                   </a>
                 ))}
                 
