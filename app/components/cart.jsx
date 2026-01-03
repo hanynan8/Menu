@@ -751,7 +751,7 @@ const Cart = ({ language = 'ar' }) => {
                     className="w-full h-24 sm:h-32 rounded-lg object-cover border-2 mb-2"
                     style={{ borderColor: colors.secondary }}
                   />
-                  <h4 className="font-bold text-xs sm:text-sm mb-1 line-clamp-2" style={{ color: colors.text }}>
+                  <h4 className="font-bold text-sm sm:text-sm mb-1 line-clamp-2" style={{ color: colors.text }}>
                     {item.name}
                   </h4>
                   <p className="text-[10px] sm:text-xs mb-2" style={{ color: colors.secondary }}>

@@ -287,7 +287,7 @@ export default function Home() {
                 <div className={`max-w-3xl ${language === 'ar' ? 'text-right' : 'text-left'}`}>
                   <div className="mb-2 sm:mb-3 md:mb-4 lg:mb-6">
                     <div
-                      className="inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-sm px-1.5 sm:px-2 md:px-2.5 lg:px-3.5 py-0.5 sm:py-0.5 md:py-1 rounded-full mb-1 sm:mb-1.5 md:mb-2 lg:mb-3 shadow-md border"
+                      className="inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-sm px-1.5 sm:px-2 md:px-2.5 lg:px-3.5 py-0.5 sm:py-0.5 md:py-1 rounded-full mb-[-5px] sm:mb-1.5 md:mb-2 lg:mb-3 shadow-md border"
                       style={{
                         backgroundColor: colors.primary + 'CC',
                         borderColor: colors.accent + '60'
@@ -300,14 +300,14 @@ export default function Home() {
                     </div>
                   
                     <h1
-                      className="text-sm sm:text-base md:text-lg lg:text-3xl xl:text-4xl 2xl:text-5xl font-black bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent w-full mb-0.5 sm:mb-0.5 md:mb-1 lg:mb-1.5 leading-relaxed drop-shadow-2xl"
+                      className="text-lg sm:text-base md:text-lg lg:text-3xl xl:text-4xl 2xl:text-5xl font-black bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent w-full lg:mb-1.5 leading-relaxed drop-shadow-2xl"
                       style={{ paddingTop: '0.2em', paddingBottom: '0.2em' }}
                     >
                       {slide[language].title}
                     </h1>
                   
                     <p
-                      className="text-[9px] sm:text-[10px] md:text-xs lg:text-base xl:text-lg mb-1.5 sm:mb-2 md:mb-2.5 lg:mb-3 xl:mb-4  leading-snug sm:leading-relaxed max-w-2xl font-medium drop-shadow-md line-clamp-2 sm:line-clamp-3 md:line-clamp-none"
+                      className="text-[9px] mt-[-5px] sm:text-[10px] md:text-xs lg:text-base xl:text-lg mb-1.5 sm:mb-2 md:mb-2.5 lg:mb-3 xl:mb-4  leading-snug sm:leading-relaxed max-w-2xl font-medium drop-shadow-md line-clamp-2 sm:line-clamp-3 md:line-clamp-none"
                       style={{ color: colors.text + 'E6' }}
                     >
                       {slide[language].description}
@@ -690,7 +690,7 @@ export default function Home() {
                 <div className="p-2.5 sm:p-3 md:p-4 lg:p-5 xl:p-6 flex flex-col flex-grow">
 <div className="w-full">
   <h3 
-    className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black mb-1.5 sm:mb-2 md:mb-3 transition-all duration-300 line-clamp-2 leading-relaxed w-fit"
+  className="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black sm:mb-2 md:mb-3 transition-all duration-300 leading-tight sm:leading-snug md:leading-normal lg:leading-relaxed w-fit"
     style={{ 
       paddingTop: '0.2em', 
       paddingBottom: '0.2em',
@@ -703,7 +703,7 @@ export default function Home() {
     {item[language].name}
   </h3>
 </div>
-                  <p className="text-xs leading-snug sm:leading-relaxed mb-2 sm:mb-3 md:mb-4 lg:mb-5 flex-grow line-clamp-2 sm:line-clamp-3" style={{ color: colors.secondary + 'CC' }}>
+                  <p className="text-xs leading-snug sm:leading-relaxed mb-2 sm:mb-3 md:mb-4 lg:mb-5 flex-grow " style={{ color: colors.secondary + 'CC' }}>
                     {item[language].description}
                   </p>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-2 md:gap-3 mt-auto">
