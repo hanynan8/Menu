@@ -98,6 +98,17 @@ Thank you `;
     }
   };
 
+  // التحقق من نوع location
+  const getLocationData = () => {
+    const location = footer.contact.location;
+    if (typeof location === 'string') {
+      return { text: location, url: null };
+    }
+    return location;
+  };
+
+  const locationData = getLocationData();
+
   return (
     <footer 
       className="relative overflow-hidden"
@@ -113,18 +124,19 @@ Thank you `;
       />
 
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 sm:px-6 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+      <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-10 md:py-12 lg:py-16">
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
           
           {/* About Section */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <h3 
-              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-lg sm:text-xl md:text-2xl font-black mb-3 w-fit sm:mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              style={{ paddingTop: '0.2em', paddingBottom: '0.2em' }}
             >
               {footer.about.title}
             </h3>
             <p 
-              className="text-sm leading-relaxed"
+              className="text-xs sm:text-sm leading-relaxed"
               style={{ color: colors.text + 'CC' }}
             >
               {footer.about.description}
@@ -132,22 +144,23 @@ Thank you `;
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <h3 
-              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-lg sm:text-xl md:text-2xl w-fit font-black mb-3 sm:mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              style={{ paddingTop: '0.2em', paddingBottom: '0.2em' }}
             >
               {footer.quickLinks.title}
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2 sm:space-y-3">
               {footer.quickLinks.links.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.url}
-                    className={`group flex items-center gap-2 transition-all duration-300 ${language === 'ar' ? 'hover:-translate-x-2' : 'hover:translate-x-2'}`}
+                    className={`group flex items-center gap-2 transition-all duration-300 text-xs sm:text-sm ${language === 'ar' ? 'hover:-translate-x-2' : 'hover:translate-x-2'}`}
                     style={{ color: colors.text + 'CC' }}
                   >
                     <ChevronRight 
-                      className={`w-4 h-4 transition-colors duration-300 ${language === 'ar' ? 'rotate-180' : ''}`}
+                      className={`w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 transition-colors duration-300 ${language === 'ar' ? 'rotate-180' : ''}`}
                       style={{ color: colors.secondary }}
                     />
                     <span className="group-hover:text-white transition-colors duration-300">
@@ -160,25 +173,26 @@ Thank you `;
           </div>
 
           {/* Contact Info */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <h3 
-              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-lg sm:text-xl md:text-2xl w-fit font-black mb-3 sm:mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              style={{ paddingTop: '0.2em', paddingBottom: '0.2em' }}
             >
               {footer.contact.title}
             </h3>
-            <ul className="space-y-5">
-              <li className="flex items-start gap-3 group">
+            <ul className="space-y-3 sm:space-y-4 md:space-y-5">
+              <li className="flex items-start gap-2 sm:gap-3 group">
                 <Phone 
-                  className="w-5 h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
+                  className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
                   style={{ color: colors.secondary }}
                 />
-                <div>
-                  <p className="text-xs font-medium mb-1" style={{ color: colors.secondary }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] sm:text-xs font-medium mb-0.5 sm:mb-1" style={{ color: colors.secondary }}>
                     {language === 'ar' ? 'الهاتف' : 'Phone'}
                   </p>
                   <a 
                     href={`tel:${footer.contact.phone.replace(/\s/g, '')}`}
-                    className="text-sm font-bold hover:text-white transition-colors duration-300"
+                    className="text-xs sm:text-sm font-bold hover:text-white transition-colors duration-300 break-all"
                     style={{ color: colors.text }}
                   >
                     {footer.contact.phone}
@@ -186,18 +200,18 @@ Thank you `;
                 </div>
               </li>
 
-              <li className="flex items-start gap-3 group">
+              <li className="flex items-start gap-2 sm:gap-3 group">
                 <Mail 
-                  className="w-5 h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
+                  className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
                   style={{ color: colors.secondary }}
                 />
-                <div>
-                  <p className="text-xs font-medium mb-1" style={{ color: colors.secondary }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] sm:text-xs font-medium mb-0.5 sm:mb-1" style={{ color: colors.secondary }}>
                     {language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
                   </p>
                   <a 
                     href={`mailto:${footer.contact.email}`}
-                    className="text-sm font-bold hover:text-white transition-colors duration-300"
+                    className="text-xs sm:text-sm font-bold hover:text-white transition-colors duration-300 break-all"
                     style={{ color: colors.text }}
                   >
                     {footer.contact.email}
@@ -205,31 +219,43 @@ Thank you `;
                 </div>
               </li>
 
-              <li className="flex items-start gap-3 group">
+              <li className="flex items-start gap-2 sm:gap-3 group">
                 <MapPin 
-                  className="w-5 h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
+                  className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
                   style={{ color: colors.secondary }}
                 />
-                <div>
-                  <p className="text-xs font-medium mb-1" style={{ color: colors.secondary }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] sm:text-xs font-medium mb-0.5 sm:mb-1" style={{ color: colors.secondary }}>
                     {language === 'ar' ? 'الموقع' : 'Location'}
                   </p>
-                  <p className="text-sm font-bold break-words" style={{ color: colors.text }}>
-                    {footer.contact.location}
-                  </p>
+                  {locationData.url ? (
+                    <a 
+                      href={locationData.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs sm:text-sm font-bold hover:text-white transition-colors duration-300 break-words underline-offset-2"
+                      style={{ color: colors.text }}
+                    >
+                      {locationData.text}
+                    </a>
+                  ) : (
+                    <p className="text-xs sm:text-sm font-bold break-words" style={{ color: colors.text }}>
+                      {locationData.text}
+                    </p>
+                  )}
                 </div>
               </li>
 
-              <li className="flex items-start gap-3 group">
+              <li className="flex items-start gap-2 sm:gap-3 group">
                 <Clock 
-                  className="w-5 h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
+                  className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
                   style={{ color: colors.secondary }}
                 />
-                <div>
-                  <p className="text-xs font-medium mb-1" style={{ color: colors.secondary }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] sm:text-xs font-medium mb-0.5 sm:mb-1" style={{ color: colors.secondary }}>
                     {language === 'ar' ? 'ساعات العمل' : 'Hours'}
                   </p>
-                  <p className="text-sm font-bold break-words" style={{ color: colors.text }}>
+                  <p className="text-xs sm:text-sm font-bold break-words" style={{ color: colors.text }}>
                     {footer.contact.hours}
                   </p>
                 </div>
@@ -238,20 +264,21 @@ Thank you `;
           </div>
 
           {/* Social Media */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <h3 
-              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-lg sm:text-xl md:text-2xl font-black w-fit mb-3 sm:mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              style={{ paddingTop: '0.2em', paddingBottom: '0.2em' }}
             >
               {footer.social.title}
             </h3>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3 sm:gap-4">
               {footer.social.platforms.map((platform, index) => (
                 <a
                   key={index}
                   href={platform.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative p-3 rounded-full transition-all duration-300 hover:scale-110 border-2"
+                  className="group relative p-2.5 sm:p-3 rounded-full transition-all duration-300 hover:scale-110 border-2"
                   style={{ 
                     backgroundColor: colors.cardBg,
                     borderColor: colors.secondary + '40'
@@ -274,24 +301,24 @@ Thank you `;
 
             {/* Newsletter or CTA */}
             <div 
-              className="mt-6 md:mt-8 p-4 rounded-xl border-2"
+              className="mt-4 sm:mt-6 md:mt-8 p-3 sm:p-4 rounded-xl border-2"
               style={{ 
                 backgroundColor: colors.cardBg,
                 borderColor: colors.secondary + '40'
               }}
             >
-              <p className="text-sm font-bold mb-3" style={{ color: colors.text }}>
+              <p className="text-xs sm:text-sm font-bold mb-2 sm:mb-3" style={{ color: colors.text }}>
                 {language === 'ar' ? 'اطلب الآن واستمتع بأشهى الأطباق' : 'Order Now and Enjoy Delicious Dishes'}
               </p>
               <button 
                 onClick={handleOrderNow}
-                className="w-full text-white px-4 py-3 rounded-lg font-bold shadow-lg hover:scale-105 transition-all duration-300 border text-sm md:text-base flex items-center justify-center gap-2"
+                className="w-full text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg font-bold shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 border text-xs sm:text-sm md:text-base flex items-center justify-center gap-2"
                 style={{ 
                   backgroundColor: colors.primary,
                   borderColor: colors.secondary + '4D'
                 }}
               >
-                <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
+                <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0" />
                 <span>{language === 'ar' ? 'اطلب الآن' : 'Order Now'}</span>
               </button>
             </div>
@@ -301,15 +328,15 @@ Thank you `;
 
       {/* Bottom Bar */}
       <div 
-        className="border-t-2 py-6"
+        className="border-t-2 py-4 sm:py-5 md:py-6"
         style={{ 
           borderColor: colors.secondary + '30',
           backgroundColor: colors.cardBg
         }}
       >
-        <div className="container mx-auto px-4 sm:px-6">
+        <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
           <p 
-            className="text-sm font-medium text-center"
+            className="text-xs sm:text-sm font-medium text-center break-words px-2"
             style={{ color: colors.text + 'CC' }}
           >
             {footer.copyright}
@@ -327,4 +354,4 @@ Thank you `;
       />
     </footer>
   );
-}
+} 

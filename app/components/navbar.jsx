@@ -278,25 +278,18 @@ const RestaurantNavbar = () => {
             
             {/* Logo */}
             <div className="flex items-center gap-2 sm:gap-3">
-              <div 
-                className="rounded-full overflow-hidden shadow-lg border-2 flex items-center justify-center"
-                style={{ 
-                  borderColor: colors.secondary,
-                  width: '50px',
-                  height: '50px'
-                }}
-              >
-                <img
-                  src={logo.image_url}
-                  alt={logo.alt_text}
-                  className="object-cover"
-                  style={{ 
-                    width: '100%',
-                    height: '100%',
-                    transform: 'scale(1.4)'
-                  }}
-                />
-              </div>
+            <div 
+              className="rounded-full overflow-hidden shadow-lg border-2 flex items-center justify-center w-[45px] h-[45px] sm:w-[45px] sm:h-[45px] md:w-[45px] md:h-[45px] lg:w-[55px] lg:h-[55px]"
+              style={{ 
+                borderColor: colors.secondary
+              }}
+            >
+              <img
+                src={logo.image_url}
+                alt={logo.alt_text}
+                className="w-full h-full object-cover scale-[1.4]"
+              />
+            </div>
               <span 
                 className="text-base sm:text-xl md:text-2xl font-bold"
                 style={{ color: colors.text }}

@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [location, setLocation] = useState(""); // حقل الموقع الجديد
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -34,6 +35,7 @@ export default function RegisterPage() {
       name: "الاسم الكامل",
       phone: "رقم الهاتف",
       address: "العنوان",
+      location: "الموقع (اختياري)",
       paymentMethod: "طريقة الدفع المفضلة",
       cash: "كاش",
       visa: "فيزا",
@@ -51,9 +53,10 @@ export default function RegisterPage() {
       name: "Full Name",
       phone: "Phone Number",
       address: "Address",
+      location: "Location (Optional)",
       paymentMethod: "Preferred Payment Method",
       cash: "Cash",
-      visa: "Visa",
+      visa: "Card",
       submit: "Register",
       allFields: "All fields are required",
       errorOccurred: "An error occurred, please try again",
@@ -125,6 +128,7 @@ export default function RegisterPage() {
           name: name.trim(),
           phone,
           address,
+          location: location.trim() || null, // إرسال الموقع أو null إذا كان فارغ
           paymentMethod,
           createdAt: new Date().toISOString()
         }),
@@ -206,6 +210,21 @@ export default function RegisterPage() {
             rows="3"
             disabled={loading}
             className="border-2 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 font-medium resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: colors.background,
+              color: colors.text,
+              borderColor: colors.accent,
+            }}
+          />
+
+          {/* حقل الموقع الجديد - اختياري */}
+          <input
+            onChange={(e) => setLocation(e.target.value)}
+            type="text"
+            placeholder={t.location}
+            value={location}
+            disabled={loading}
+            className="border-2 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               backgroundColor: colors.background,
               color: colors.text,

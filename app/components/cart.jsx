@@ -403,19 +403,19 @@ export const CartNotification = () => {
 
   return (
     <div 
-      className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] px-6 py-3 rounded-lg shadow-xl flex items-center gap-2 border-2 animate-bounce"
+      className="fixed top-20 sm:top-24 left-1/2 transform -translate-x-1/2 z-[100] px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-xl flex items-center gap-2 border-2 animate-bounce"
       style={{ 
         backgroundColor: getColor(notification.type),
         borderColor: '#8B4513',
         color: 'white',
-        minWidth: '280px',
+        minWidth: '200px',
         maxWidth: '90vw',
         boxShadow: '0 10px 40px rgba(218, 165, 32, 0.5)',
         animation: 'slideDown 0.4s ease-out'
       }}
     >
       {getIcon(notification.type)}
-      <span className="font-bold">{message}</span>
+      <span className="font-bold text-sm sm:text-base">{message}</span>
     </div>
   );
 };
@@ -559,6 +559,12 @@ const Cart = ({ language = 'ar' }) => {
       message += `👤 *الاسم:* ${currentUser.name}\n`;
       message += `📱 *الهاتف:* ${currentUser.phone}\n`;
       message += `📍 *العنوان:* ${currentUser.address}\n`;
+      
+      // إضافة الموقع إذا كان متوفراً
+      if (currentUser.location) {
+        message += `🗺️ *الموقع:* ${currentUser.location}\n`;
+      }
+      
       message += `💳 *طريقة الدفع:* ${currentUser.paymentMethod === 'cash' ? 'كاش عند الاستلام 💵' : 'فيزا 💳'}\n\n`;
       message += `*🛍️ المنتجات:*\n`;
       message += `━━━━━━━━━━━━━━━━\n`;
@@ -605,7 +611,7 @@ const Cart = ({ language = 'ar' }) => {
             }}
           >
             <div 
-              className="rounded-2xl p-8 shadow-2xl border-2"
+              className="rounded-2xl p-6 sm:p-8 shadow-2xl border-2"
               style={{ 
                 backgroundColor: colors.cardBg,
                 borderColor: colors.secondary,
@@ -613,33 +619,33 @@ const Cart = ({ language = 'ar' }) => {
               }}
             >
               <div 
-                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
                 style={{ 
                   backgroundColor: colors.primary + '20',
                   border: `3px solid ${colors.primary}`
                 }}
               >
-                <LogOut size={32} style={{ color: colors.primary }} />
+                <LogOut size={28} className="sm:w-8 sm:h-8" style={{ color: colors.primary }} />
               </div>
               
               <h3 
-                className="text-2xl font-black text-center mb-4"
+                className="text-xl sm:text-2xl font-black text-center mb-3 sm:mb-4"
                 style={{ color: colors.text }}
               >
                 {t.confirmLogoutTitle}
               </h3>
               
               <p 
-                className="text-center mb-8 leading-relaxed"
+                className="text-sm sm:text-base text-center mb-6 sm:mb-8 leading-relaxed"
                 style={{ color: colors.secondary }}
               >
                 {t.confirmLogoutMessage}
               </p>
               
-              <div className="flex gap-4">
+              <div className="flex gap-3 sm:gap-4">
                 <button
                   onClick={cancelLogout}
-                  className="flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 hover:scale-105 border-2"
+                  className="flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 hover:scale-105 border-2"
                   style={{ 
                     backgroundColor: 'transparent',
                     borderColor: colors.secondary,
@@ -651,7 +657,7 @@ const Cart = ({ language = 'ar' }) => {
                 
                 <button
                   onClick={confirmLogout}
-                  className="flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg"
+                  className="flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 hover:scale-105 shadow-lg"
                   style={{ 
                     backgroundColor: '#ef4444',
                     color: 'white'
@@ -681,7 +687,7 @@ const Cart = ({ language = 'ar' }) => {
       />
 
       <div 
-        className={`fixed top-0 ${language === 'ar' ? 'left-0' : 'right-0'} h-full w-full max-w-2xl shadow-2xl`}
+        className={`fixed top-0 ${language === 'ar' ? 'left-0' : 'right-0'} h-full w-full sm:max-w-md md:max-w-lg lg:max-w-2xl shadow-2xl`}
         style={{ 
           backgroundColor: colors.background,
           animation: isClosing 
@@ -692,47 +698,47 @@ const Cart = ({ language = 'ar' }) => {
         }}
       >
         <div 
-          className="flex items-center justify-between p-6 border-b-2"
+          className="flex items-center justify-between p-3 sm:p-4 md:p-6 border-b-2"
           style={{ borderColor: colors.secondary + '4D' }}
         >
-          <h2 className="text-2xl font-black flex items-center gap-3" style={{ color: colors.text }}>
-            <ShoppingCart size={28} style={{ color: colors.secondary }} />
+          <h2 className="text-lg sm:text-xl md:text-2xl font-black flex items-center gap-2 sm:gap-3" style={{ color: colors.text }}>
+            <ShoppingCart size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" style={{ color: colors.secondary }} />
             {t.cart}
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {session && (
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-lg hover:scale-110 transition-transform"
+                className="p-1.5 sm:p-2 rounded-lg hover:scale-110 transition-transform"
                 style={{ color: '#ef4444' }}
                 title={t.logout}
               >
-                <LogOut size={20} />
+                <LogOut size={18} className="sm:w-5 sm:h-5" />
               </button>
             )}
             <button
               onClick={handleClose}
-              className="p-2 rounded-lg hover:scale-110 transition-transform"
+              className="p-1.5 sm:p-2 rounded-lg hover:scale-110 transition-transform"
               style={{ color: colors.secondary }}
             >
-              <X size={24} />
+              <X size={20} className="sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 cart-scrollbar" style={{ maxHeight: 'calc(100vh - 340px)', paddingBottom: '20px' }}>
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 cart-scrollbar" style={{ maxHeight: 'calc(100vh - 240px)', paddingBottom: '20px' }}>
           {cartItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-20">
-              <ShoppingCart size={80} className="mb-4 opacity-30" style={{ color: colors.secondary }} />
-              <h3 className="text-2xl font-bold mb-2" style={{ color: colors.text }}>{t.emptyCart}</h3>
-              <p style={{ color: colors.secondary + 'CC' }}>{t.addItems}</p>
+            <div className="flex flex-col items-center justify-center h-full text-center py-12 sm:py-16 md:py-20">
+              <ShoppingCart size={60} className="sm:w-20 sm:h-20 mb-3 sm:mb-4 opacity-30" style={{ color: colors.secondary }} />
+              <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: colors.text }}>{t.emptyCart}</h3>
+              <p className="text-sm sm:text-base" style={{ color: colors.secondary + 'CC' }}>{t.addItems}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
               {cartItems.map(item => (
                 <div 
                   key={item.id}
-                  className="flex flex-col p-3 rounded-xl border-2"
+                  className="flex flex-col p-2 sm:p-3 rounded-xl border-2"
                   style={{ 
                     backgroundColor: colors.cardBg,
                     borderColor: colors.accent + '4D',
@@ -742,39 +748,39 @@ const Cart = ({ language = 'ar' }) => {
                   <img 
                     src={item.image} 
                     alt={item.name}
-                    className="w-full h-32 rounded-lg object-cover border-2 mb-2"
+                    className="w-full h-24 sm:h-32 rounded-lg object-cover border-2 mb-2"
                     style={{ borderColor: colors.secondary }}
                   />
-                  <h4 className="font-bold text-sm mb-1 line-clamp-2" style={{ color: colors.text }}>
+                  <h4 className="font-bold text-xs sm:text-sm mb-1 line-clamp-2" style={{ color: colors.text }}>
                     {item.name}
                   </h4>
-                  <p className="text-xs mb-2" style={{ color: colors.secondary }}>
+                  <p className="text-[10px] sm:text-xs mb-2" style={{ color: colors.secondary }}>
                     {extractPrice(item.price).toFixed(2)} {item.currency || 'درهم'}
                   </p>
-                  <div className="flex items-center justify-between gap-2 mt-auto">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-1 sm:gap-2 mt-auto">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="p-1 rounded-lg border-2 hover:scale-110 transition-transform"
+                        className="p-0.5 sm:p-1 rounded-lg border-2 hover:scale-110 transition-transform"
                         style={{ 
                           borderColor: colors.secondary,
                           color: colors.secondary
                         }}
                       >
-                        <Minus size={14} />
+                        <Minus size={12} className="sm:w-3.5 sm:h-3.5" />
                       </button>
-                      <span className="font-bold text-sm w-6 text-center" style={{ color: colors.text }}>
+                      <span className="font-bold text-xs sm:text-sm w-5 sm:w-6 text-center" style={{ color: colors.text }}>
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="p-1 rounded-lg border-2 hover:scale-110 transition-transform"
+                        className="p-0.5 sm:p-1 rounded-lg border-2 hover:scale-110 transition-transform"
                         style={{ 
                           borderColor: colors.secondary,
                           color: colors.secondary
                         }}
                       >
-                        <Plus size={14} />
+                        <Plus size={12} className="sm:w-3.5 sm:h-3.5" />
                       </button>
                     </div>
                     <button

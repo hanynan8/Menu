@@ -1,12 +1,291 @@
 'use client';
 
-import { useState } from 'react';
-import { Database, Settings, Menu, Navigation, Info, BookOpen, ChevronDown, ChevronUp, Image, Upload, Link2, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Database, Settings, Menu, Navigation, Info, BookOpen, ChevronDown, ChevronUp, Image, Upload, Link2, CheckCircle, AlertCircle, Phone, Users, Edit, Save, X } from 'lucide-react';
 
 // استيراد المكونات الحقيقية
 import NavbarAdmin from './components/navbar';
 import FooterAdmin from './components/footer';
 import MenuAdmin from './components/menu';
+
+// مكون إدارة الواتساب (جديد)
+function WhatsAppAdmin() {
+  const [whatsappData, setWhatsappData] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newPhone, setNewPhone] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    fetchWhatsAppData();
+  }, []);
+
+  const fetchWhatsAppData = async () => {
+    try {
+      const response = await fetch('/api/data?collection=whatsapp');
+      const data = await response.json();
+      if (data && data.length > 0) {
+        setWhatsappData(data[0]);
+        setNewPhone(data[0].whatsApp);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching WhatsApp data:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/data?collection=whatsapp', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          _id: whatsappData._id,
+          whatsApp: newPhone
+        })
+      });
+      
+      if (response.ok) {
+        setMessage('✅ تم حفظ رقم الواتساب بنجاح!');
+        setWhatsappData({ ...whatsappData, whatsApp: newPhone });
+        setIsEditing(false);
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage('❌ حدث خطأ أثناء الحفظ');
+      }
+    } catch (error) {
+      setMessage('❌ حدث خطأ أثناء الحفظ');
+    }
+    setSaving(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-2xl p-8 border-2" style={{ borderColor: '#DAA520' }}>
+        <p className="text-center" style={{ color: '#8B4513' }}>جاري التحميل...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-2xl shadow-2xl p-8 border-2" style={{ borderColor: '#DAA520' }}>
+      <div className="flex items-center justify-between mb-6 pb-4 border-b-2" style={{ borderColor: '#CD853F' }}>
+        <h2 className="text-2xl font-bold flex items-center gap-3" style={{ color: '#8B4513' }}>
+          <Phone size={28} style={{ color: '#DAA520' }} />
+          إدارة رقم الواتساب
+        </h2>
+      </div>
+
+      <div className="space-y-6">
+        {message && (
+          <div className={`p-4 rounded-lg ${message.includes('✅') ? 'bg-green-100' : 'bg-red-100'}`}>
+            <p className="text-center font-bold">{message}</p>
+          </div>
+        )}
+
+        <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2" style={{ borderColor: '#DAA520' }}>
+          <label className="block text-lg font-bold mb-3" style={{ color: '#8B4513' }}>
+            رقم الواتساب الحالي:
+          </label>
+          
+          {!isEditing ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Phone size={24} style={{ color: '#CD853F' }} />
+                <span className="text-2xl font-bold" style={{ color: '#8B4513' }}>
+                  {whatsappData?.whatsApp || 'لا يوجد رقم'}
+                </span>
+              </div>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex items-center gap-2 px-6 py-3 rounded-lg text-white font-bold hover:scale-105 transition-all"
+                style={{ background: 'linear-gradient(to right, #DAA520, #CD853F)' }}
+              >
+                <Edit size={20} />
+                تعديل
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <input
+                type="text"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="+20xxxxxxxxxx"
+                className="w-full px-4 py-3 border-2 rounded-lg text-xl"
+                style={{ borderColor: '#DAA520', direction: 'ltr' }}
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-bold hover:scale-105 transition-all disabled:opacity-50"
+                  style={{ background: 'linear-gradient(to right, #8B4513, #A0522D)' }}
+                >
+                  <Save size={20} />
+                  {saving ? 'جاري الحفظ...' : 'حفظ'}
+                </button>
+                <button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setNewPhone(whatsappData?.whatsApp || '');
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-gray-500 text-white font-bold hover:scale-105 transition-all"
+                >
+                  <X size={20} />
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-300">
+          <p className="text-sm flex items-start gap-2" style={{ color: '#8B4513' }}>
+            <Info size={18} className="mt-1" />
+            <span>
+              <strong>ملاحظة:</strong> تأكد من كتابة رقم الواتساب بصيغة دولية صحيحة (مثال: +2001201061216)
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// مكون عرض العملاء (جديد)
+function CustomersAdmin() {
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await fetch('/api/data?collection=auth');
+      const data = await response.json();
+      setCustomers(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      setLoading(false);
+    }
+  };
+
+  const filteredCustomers = customers.filter(customer =>
+    customer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    customer.phone?.includes(searchTerm) ||
+    customer.address?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ar-EG', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-2xl p-8 border-2" style={{ borderColor: '#DAA520' }}>
+        <p className="text-center" style={{ color: '#8B4513' }}>جاري التحميل...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-2xl shadow-2xl p-8 border-2" style={{ borderColor: '#DAA520' }}>
+      <div className="flex items-center justify-between mb-6 pb-4 border-b-2" style={{ borderColor: '#CD853F' }}>
+        <h2 className="text-2xl font-bold flex items-center gap-3" style={{ color: '#8B4513' }}>
+          <Users size={28} style={{ color: '#DAA520' }} />
+          بيانات العملاء ({customers.length})
+        </h2>
+      </div>
+
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="🔍 ابحث بالاسم، الهاتف، أو العنوان..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-3 border-2 rounded-lg text-lg"
+          style={{ borderColor: '#DAA520' }}
+        />
+      </div>
+
+      {filteredCustomers.length === 0 ? (
+        <div className="text-center py-12">
+          <Users size={64} className="mx-auto mb-4 opacity-30" style={{ color: '#DAA520' }} />
+          <p className="text-xl" style={{ color: '#8B4513' }}>
+            {searchTerm ? 'لا توجد نتائج للبحث' : 'لا يوجد عملاء مسجلين'}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {filteredCustomers.map((customer, index) => (
+            <div
+              key={customer._id}
+              className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2 hover:shadow-lg transition-all"
+              style={{ borderColor: '#DAA520' }}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl" style={{ background: 'linear-gradient(to right, #DAA520, #CD853F)' }}>
+                    {index + 1}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold" style={{ color: '#8B4513' }}>
+                      {customer.name}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {formatDate(customer.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>رقم الهاتف:</p>
+                  <p className="text-lg" style={{ direction: 'ltr', textAlign: 'right' }}>{customer.phone}</p>
+                </div>
+                
+                <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>طريقة الدفع:</p>
+                  <p className="text-lg">
+                    {customer.paymentMethod === 'cash' ? '💵 كاش' : '💳 بطاقة ائتمانية'}
+                  </p>
+                </div>
+                
+                <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>موقع العميل:</p>
+                  <p className="text-lg">{customer.location || 'غير محدد'}</p>
+                </div>
+                
+                <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>العنوان التفصيلي:</p>
+                  <p className="text-lg">{customer.address}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function RestaurantAdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -90,12 +369,49 @@ export default function RestaurantAdminDashboard() {
   const tabs = [
     { id: 'menu', name: 'Menu', icon: Menu, component: MenuAdmin },
     { id: 'navbar', name: 'Navbar', icon: Navigation, component: NavbarAdmin },
-    { id: 'footer', name: 'Footer', icon: Info, component: FooterAdmin }
+    { id: 'footer', name: 'Footer', icon: Info, component: FooterAdmin },
+    { id: 'whatsapp', name: 'WhatsApp', icon: Phone, component: WhatsAppAdmin },
+    { id: 'customers', name: 'العملاء', icon: Users, component: CustomersAdmin }
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || MenuAdmin;
 
   const userGuides = [
+    {
+      id: 'whatsapp',
+      title: '📱 دليل إدارة رقم الواتساب',
+      icon: Phone,
+      color: 'blue',
+      steps: [
+        {
+          title: '1️⃣ كيفية تعديل رقم الواتساب',
+          content: [
+            '✅ اذهب إلى تبويب "WhatsApp" من القائمة الجانبية',
+            '✅ اضغط على زر "تعديل"',
+            '✅ أدخل رقم الواتساب الجديد بصيغة دولية (+20xxxxxxxxxx)',
+            '✅ اضغط على "حفظ" لتأكيد التعديل',
+            '⚠️ تأكد من كتابة الرقم بصيغة صحيحة'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'customers',
+      title: '👥 دليل عرض بيانات العملاء',
+      icon: Users,
+      color: 'green',
+      steps: [
+        {
+          title: '1️⃣ كيفية عرض العملاء',
+          content: [
+            '✅ اذهب إلى تبويب "العملاء" من القائمة الجانبية',
+            '✅ ستظهر قائمة بجميع العملاء المسجلين',
+            '✅ يمكنك البحث عن عميل باستخدام الاسم، الهاتف، أو العنوان',
+            '✅ كل بطاقة عميل تحتوي على: الاسم، الهاتف، العنوان، طريقة الدفع، تاريخ التسجيل'
+          ]
+        }
+      ]
+    },
     {
       id: 'navbar',
       title: '📌 دليل التعديل على Navbar (شريط التنقل)',
@@ -661,8 +977,7 @@ export default function RestaurantAdminDashboard() {
               </p>
             </div>
             <div className="text-center md:text-left">
-              <p className="text-sm" style={{ color: '#8B4513' }}>نسخة 1.0</p>
-              <p className="text-xs" style={{ color: '#999' }}>جميع الحقوق محفوظة © 2025</p>
+              <p className="text-sm" style={{ color: '#8B4513' }}>نسخة 2.0</p>
             </div>
           </div>
         </div>

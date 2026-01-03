@@ -1,10 +1,11 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import { Search, ChevronLeft, ChevronRight, Phone, MapPin, Clock, Star, ShoppingCart } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, ChevronLeft, ChevronRight, Phone, MapPin, Clock, Star, ShoppingCart, Loader } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from './components/cart';
 import { useSession } from 'next-auth/react';
 import Navbar from './components/navbar';
+import Image from 'next/image';
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -15,6 +16,8 @@ export default function Home() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [clickedItem, setClickedItem] = useState(null);
   const [loadedImages, setLoadedImages] = useState(new Set());
+  const [visibleCategories, setVisibleCategories] = useState(new Set());
+  const categoryRefs = useRef({});
   const { language } = useLanguage();
   const { addToCart, getTotalItems, setIsCartOpen } = useCart();
   const { data: session } = useSession();
@@ -22,16 +25,39 @@ export default function Home() {
   const totalItems = getTotalItems();
 
   useEffect(() => {
-    fetch('/api/data')
-      .then(res => res.json())
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    fetch('/api/data', {
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'Cache-Control': 'max-age=3600' // Cache for 1 hour
+      }
+    })
+      .then(res => {
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then(result => {
         setData(result.Menu[0]);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching data:', err);
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          console.error('Request timeout');
+        } else {
+          console.error('Error fetching data:', err);
+        }
         setLoading(false);
       });
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -59,7 +85,8 @@ export default function Home() {
         }
       });
     }, {
-      rootMargin: '100px'
+      rootMargin: '100px',
+      threshold: 0.1
     });
 
     const imageContainers = document.querySelectorAll('[data-item-id]');
@@ -68,27 +95,38 @@ export default function Home() {
     return () => imageObserver.disconnect();
   }, [data, selectedCategory, searchQuery]);
 
+  // Intersection Observer for categories lazy loading
+  useEffect(() => {
+    if (!data) return;
+
+    const categoryObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const categoryId = entry.target.getAttribute('data-category-id');
+          if (categoryId) {
+            setVisibleCategories(prev => new Set([...prev, categoryId]));
+          }
+        }
+      });
+    }, {
+      rootMargin: '200px',
+      threshold: 0.1
+    });
+
+    Object.values(categoryRefs.current).forEach(ref => {
+      if (ref) categoryObserver.observe(ref);
+    });
+
+    return () => categoryObserver.disconnect();
+  }, [data]);
+
   if (loading) {
     return (
       <div 
-        className="min-h-screen flex items-center justify-center" 
+        className="min-h-screen flex flex-col items-center justify-center" 
         style={{ backgroundColor: '#1A1410' }}
       >
-        <div style={{
-          width: '60px',
-          height: '60px',
-          border: '6px solid #2D2420',
-          borderTop: '6px solid #DAA520',
-          borderRadius: '50%',
-          animation: 'spin 0.8s linear infinite'
-        }} />
-        
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+        <Loader className="w-12 h-12 sm:w-16 sm:h-16 animate-spin mb-4" style={{ color: '#DAA520' }} />
       </div>
     );
   }
@@ -223,7 +261,7 @@ export default function Home() {
                   )`
                 }}
               />
-             
+            
               <div
                 className="absolute inset-0 bg-gradient-to-b hidden lg:block"
                 style={{
@@ -237,7 +275,7 @@ export default function Home() {
                 }}
               />
             </div>
-           
+          
             <img
               src={slide.image}
               alt={slide[language].title}
@@ -274,56 +312,6 @@ export default function Home() {
                     >
                       {slide[language].description}
                     </p>
-                 
-                    <div className="flex flex-row lg:flex-row gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 items-center justify-start">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddSlideToCart(slide);
-                        }}
-                        className="group relative text-white px-2 sm:px-2.5 md:px-3 lg:px-5 xl:px-6 py-1 sm:py-1 md:py-1.5 lg:py-2.5 rounded-full text-[8px] sm:text-[9px] md:text-[10px] lg:text-sm font-bold shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden border inline-flex items-center justify-center gap-1"
-                        style={{
-                          backgroundColor: colors.primary + 'E6',
-                          borderColor: colors.accent + '30'
-                        }}
-                      >
-                        <ShoppingCart size={12} className="sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 flex-shrink-0" />
-                        <span className="relative z-10 font-normal">
-                          {t.orderNow}
-                        </span>
-                        <div
-                          className="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
-                          style={{ backgroundColor: colors.accent + '30' }}
-                        ></div>
-                      </button>
-                     
-                      <div
-                        className="inline-flex items-center gap-1 sm:gap-1.5 md:gap-2 backdrop-blur-sm bg-black/10 px-1.5 sm:px-2 md:px-2.5 lg:px-3.5 py-0.5 sm:py-1 md:py-1.5 lg:py-2.5 rounded-full shadow-md border"
-                        style={{
-                          borderColor: colors.accent + '60'
-                        }}
-                      >
-                        <div className="flex items-baseline gap-0.5 sm:gap-1">
-                          <span className="text-[10px] sm:text-xs md:text-sm lg:text-lg xl:text-xl font-black" style={{ color: colors.secondary }}>
-                            {slide[language].price}
-                          </span>
-                          <span className="text-[7px] sm:text-[8px] md:text-[9px] lg:text-[11px] font-normal" style={{ color: colors.text }}>
-                            {slide[language].currency}
-                          </span>
-                        </div>
-                       
-                        <div className="h-2 sm:h-2.5 md:h-3 lg:h-4.5 w-px" style={{ backgroundColor: colors.accent + '60' }}></div>
-                       
-                        <div className="flex flex-col">
-                          <span className="text-[6px] sm:text-[7px] md:text-[8px] lg:text-[10px] font-medium opacity-80 leading-tight" style={{ color: colors.text }}>
-                            {t.normalPrice}
-                          </span>
-                          <span className="text-[6px] sm:text-[7px] md:text-[8px] lg:text-[10px] xl:text-[11px] font-bold line-through opacity-60" style={{ color: colors.text }}>
-                            {slide[language].oldPrice}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -406,193 +394,217 @@ export default function Home() {
           ))}
         </div>
       </div>
+{/* Search and Categories Bar */}
+<div className="sticky top-0 z-40 shadow-lg border-b-2" style={{ backgroundColor: colors.cardBg, borderColor: colors.secondary + '80' }}>
+  <div className="w-full px-2 sm:px-3 md:px-4 py-2 sm:py-3">
+    <div className="flex flex-col gap-2 sm:gap-3">
+      {/* Mobile: Search + Cart Button */}
+<div className="w-full flex lg:hidden items-center justify-center gap-2 px-4">
+  <div className="relative flex-1 max-w-md">
+    <Search 
+      className={`absolute ${language === 'ar' ? 'right-2 sm:right-3' : 'left-2 sm:left-3'} top-1/2 -translate-y-1/2 flex-shrink-0`} 
+      style={{ color: colors.secondary }} 
+      size={16} 
+    />
+    <input
+      type="text"
+      placeholder={t.searchPlaceholder}
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className={`w-full ${language === 'ar' ? 'pr-9 sm:pr-10 pl-2 sm:pl-3' : 'pl-9 sm:pl-10 pr-2 sm:pr-3'} py-2 sm:py-2.5 rounded-lg border-2 focus:outline-none text-xs sm:text-sm font-medium transition-all duration-300`}
+      style={{ 
+        backgroundColor: colors.background,
+        color: colors.text,
+        borderColor: colors.secondary,
+        boxShadow: `0 0 10px ${colors.secondary}33`
+      }}
+      onFocus={(e) => {
+        e.target.style.borderColor = colors.primary;
+        e.target.style.boxShadow = `0 0 15px ${colors.primary}66`;
+      }}
+      onBlur={(e) => {
+        e.target.style.borderColor = colors.secondary;
+        e.target.style.boxShadow = `0 0 10px ${colors.secondary}33`;
+      }}
+    />
+  </div>
 
-      {/* Search and Categories Bar */}
-      <div className="sticky top-0 z-40 shadow-lg border-b-2" style={{ backgroundColor: colors.cardBg, borderColor: colors.secondary + '80' }}>
-        <div className="w-full px-2 sm:px-3 md:px-4 py-2 sm:py-3">
-          <div className="flex flex-col gap-2 sm:gap-3">
+  <button
+    onClick={() => setIsCartOpen(true)}
+    className="relative flex items-center justify-center p-2 sm:p-2.5 rounded-lg font-medium transition-all duration-200 hover:scale-105 flex-shrink-0"
+    style={{
+      color: colors.text,
+      backgroundColor: colors.accent
+    }}
+  >
+    <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
+    {totalItems > 0 && (
+      <span 
+        className="absolute -top-1 -right-1 min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold text-white px-1 animate-pulse"
+        style={{ backgroundColor: '#ef4444' }}
+      >
+        {totalItems}
+      </span>
+    )}
+  </button>
+</div>
+      {/* Desktop: All in One Row */}
+      <div id='menu' className="w-full">
+        {/* Mobile: Grid Layout for Categories */}
+        <div className="grid grid-cols-4 grid-rows-2 gap-1.5 sm:gap-2 md:gap-2.5 lg:hidden">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg font-bold text-[10px] sm:text-xs transition-all duration-300 shadow-md border ${
+              selectedCategory === 'all' ? 'scale-105 shadow-lg' : 'active:scale-95'
+            }`}
+            style={selectedCategory === 'all' ? { 
+              backgroundColor: colors.primary,
+              color: 'white',
+              borderColor: colors.secondary,
+              boxShadow: `0 3px 10px ${colors.primary}66`
+            } : {
+              backgroundColor: colors.background,
+              color: colors.secondary,
+              borderColor: colors.accent
+            }}
+          >
+            <span className="whitespace-nowrap flex items-center justify-center">
+              <span className="text-[10px]">{language === 'ar' ? 'كل الاكلات' : 'All'}</span>
+            </span>
+          </button>
+          
+          {data.categories.slice(0, 7).map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`flex items-center justify-center px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-lg font-bold text-[10px] sm:text-xs transition-all duration-300 shadow-md border overflow-hidden ${
+                selectedCategory === cat.id ? 'scale-105 shadow-lg' : 'active:scale-95'
+              }`}
+              style={selectedCategory === cat.id ? { 
+                backgroundColor: colors.primary,
+                color: 'white',
+                borderColor: colors.secondary,
+                boxShadow: `0 3px 10px ${colors.primary}66`
+              } : {
+                backgroundColor: colors.background,
+                color: colors.secondary,
+                borderColor: colors.accent
+              }}
+            >
+              <span className="truncate max-w-full text-center leading-tight">
+                {cat[language].name}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop: Single Row with Search + Categories + Cart */}
+        <div className="hidden lg:flex items-center gap-2 xl:gap-3">
+          {/* Search Bar */}
+          <div className="relative flex-1 max-w-xs xl:max-w-sm">
+            <Search 
+              className={`absolute ${language === 'ar' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 flex-shrink-0`} 
+              style={{ color: colors.secondary }} 
+              size={16} 
+            />
+            <input
+              type="text"
+              placeholder={t.searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`w-full ${language === 'ar' ? 'pr-10 pl-3' : 'pl-10 pr-3'} py-2.5 rounded-lg border-2 focus:outline-none text-sm font-medium transition-all duration-300`}
+              style={{ 
+                backgroundColor: colors.background,
+                color: colors.text,
+                borderColor: colors.secondary,
+                boxShadow: `0 0 10px ${colors.secondary}33`
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = colors.primary;
+                e.target.style.boxShadow = `0 0 15px ${colors.primary}66`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = colors.secondary;
+                e.target.style.boxShadow = `0 0 10px ${colors.secondary}33`;
+              }}
+            />
+          </div>
+
+          {/* Categories */}
+          <div className="flex items-center gap-2 ">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`px-4 xl:px-5 py-2.5 rounded-lg font-bold text-sm xl:text-base transition-all duration-300 shadow-md border whitespace-nowrap ${
+                selectedCategory === 'all' ? 'scale-105 shadow-lg' : 'active:scale-95'
+              }`}
+              style={selectedCategory === 'all' ? { 
+                backgroundColor: colors.primary,
+                color: 'white',
+                borderColor: colors.secondary,
+                boxShadow: `0 3px 10px ${colors.primary}66`
+              } : {
+                backgroundColor: colors.background,
+                color: colors.secondary,
+                borderColor: colors.accent
+              }}
+            >
+              {t.allCategories}
+            </button>
             
-            <div className="w-full flex lg:hidden items-center gap-2">
-              <div className="relative flex-1">
-                <Search 
-                  className={`absolute ${language === 'ar' ? 'right-2 sm:right-3' : 'left-2 sm:left-3'} top-1/2 -translate-y-1/2 flex-shrink-0`} 
-                  style={{ color: colors.secondary }} 
-                  size={16} 
-                />
-                <input
-                  type="text"
-                  placeholder={t.searchPlaceholder}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full ${language === 'ar' ? 'pr-9 sm:pr-10 pl-2 sm:pl-3' : 'pl-9 sm:pl-10 pr-2 sm:pr-3'} py-2 sm:py-2.5 rounded-lg border-2 focus:outline-none text-xs sm:text-sm font-medium transition-all duration-300`}
-                  style={{ 
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    borderColor: colors.secondary,
-                    boxShadow: `0 0 10px ${colors.secondary}33`
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = colors.primary;
-                    e.target.style.boxShadow = `0 0 15px ${colors.primary}66`;
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = colors.secondary;
-                    e.target.style.boxShadow = `0 0 10px ${colors.secondary}33`;
-                  }}
-                />
-              </div>
-
+            {data.categories.slice(0, 7).map(cat => (
               <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative flex items-center justify-center p-2 sm:p-2.5 rounded-lg font-medium transition-all duration-200 hover:scale-105 flex-shrink-0"
-                style={{
-                  color: colors.text,
-                  backgroundColor: colors.accent
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex items-center justify-center px-3 xl:px-4 py-2.5 rounded-lg font-bold text-sm xl:text-base transition-all duration-300 shadow-md border overflow-hidden ${
+                  selectedCategory === cat.id ? 'scale-105 shadow-lg' : 'active:scale-95'
+                }`}
+                style={selectedCategory === cat.id ? { 
+                  backgroundColor: colors.primary,
+                  color: 'white',
+                  borderColor: colors.secondary,
+                  boxShadow: `0 3px 10px ${colors.primary}66`
+                } : {
+                  backgroundColor: colors.background,
+                  color: colors.secondary,
+                  borderColor: colors.accent
                 }}
               >
-                <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
-                {totalItems > 0 && (
-                  <span 
-                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold text-white px-1 animate-pulse"
-                    style={{ backgroundColor: '#ef4444' }}
-                  >
-                    {totalItems}
-                  </span>
-                )}
+                <span className="truncate max-w-full text-center leading-tight whitespace-nowrap">
+                  {cat[language].name}
+                </span>
               </button>
-            </div>
-
-            <div className="w-full hidden lg:block">
-              <div className="relative">
-                <Search 
-                  className={`absolute ${language === 'ar' ? 'right-2 sm:right-3' : 'left-2 sm:left-3'} top-1/2 -translate-y-1/2 flex-shrink-0`} 
-                  style={{ color: colors.secondary }} 
-                  size={16} 
-                />
-                <input
-                  type="text"
-                  placeholder={t.searchPlaceholder}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full ${language === 'ar' ? 'pr-9 sm:pr-10 pl-2 sm:pl-3' : 'pl-9 sm:pl-10 pr-2 sm:pr-3'} py-2 sm:py-2.5 rounded-lg border-2 focus:outline-none text-xs sm:text-sm font-medium transition-all duration-300`}
-                  style={{ 
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    borderColor: colors.secondary,
-                    boxShadow: `0 0 10px ${colors.secondary}33`
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = colors.primary;
-                    e.target.style.boxShadow = `0 0 15px ${colors.primary}66`;
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = colors.secondary;
-                    e.target.style.boxShadow = `0 0 10px ${colors.secondary}33`;
-                  }}
-                />
-              </div>
-            </div>
-
-            <div id='menu' className="w-full">
-              <div className="grid grid-cols-4 grid-rows-2 lg:flex lg:flex-wrap gap-1.5 sm:gap-2 md:gap-2.5">
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className={`px-2 sm:px-3 md:px-4 lg:px-5 py-1.5 sm:py-2 md:py-2.5 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm lg:text-base transition-all duration-300 shadow-md border ${
-                    selectedCategory === 'all' ? 'scale-105 shadow-lg' : 'active:scale-95'
-                  }`}
-                  style={selectedCategory === 'all' ? { 
-                    backgroundColor: colors.primary,
-                    color: 'white',
-                    borderColor: colors.secondary,
-                    boxShadow: `0 3px 10px ${colors.primary}66`
-                  } : {
-                    backgroundColor: colors.background,
-                    color: colors.secondary,
-                    borderColor: colors.accent
-                  }}
-                >
-                  <span className="whitespace-nowrap flex items-center justify-center gap-1">
-                    <span className="hidden sm:inline">{t.allCategories}</span>
-                    <span className="sm:hidden text-[10px]">{language === 'ar' ? 'كل الاكلات' : 'All'}</span>
-                  </span>
-                </button>
-                
-                {data.categories.slice(0, 7).map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`flex items-center justify-center px-1.5 sm:px-3 md:px-4 lg:px-5 py-1.5 sm:py-2 md:py-2.5 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm lg:text-base transition-all duration-300 shadow-md border overflow-hidden ${
-                      selectedCategory === cat.id ? 'scale-105 shadow-lg' : 'active:scale-95'
-                    }`}
-                    style={selectedCategory === cat.id ? { 
-                      backgroundColor: colors.primary,
-                      color: 'white',
-                      borderColor: colors.secondary,
-                      boxShadow: `0 3px 10px ${colors.primary}66`
-                    } : {
-                      backgroundColor: colors.background,
-                      color: colors.secondary,
-                      borderColor: colors.accent
-                    }}
-                  >
-                    <span className="truncate max-w-full text-center leading-tight">
-                      {cat[language].name}
-                    </span>
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => setIsCartOpen(true)}
-                  className="relative hidden lg:flex items-center justify-center gap-2 px-3 xl:px-4 py-2 md:py-2.5 rounded-lg font-medium transition-all duration-200 hover:scale-105"
-                  style={{
-                    color: colors.text,
-                    backgroundColor: colors.accent
-                  }}
-                >
-                  <ShoppingCart size={18} />
-                  {totalItems > 0 && (
-                    <span 
-                      className="absolute -top-2 -right-2 min-w-[22px] h-5 xl:min-w-[24px] xl:h-6 rounded-full flex items-center justify-center text-xs font-bold text-white px-1.5 animate-pulse"
-                      style={{ backgroundColor: '#ef4444' }}
-                    >
-                      {totalItems}
-                    </span>
-                  )}
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
+
+          {/* Cart Button */}
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 hover:scale-105 flex-shrink-0"
+            style={{
+              color: colors.text,
+              backgroundColor: colors.accent
+            }}
+          >
+            <ShoppingCart size={18} />
+            {totalItems > 0 && (
+              <span 
+                className="absolute -top-2 -right-2 min-w-[22px] h-5 xl:min-w-[24px] xl:h-6 rounded-full flex items-center justify-center text-xs font-bold text-white px-1.5 animate-pulse"
+                style={{ backgroundColor: '#ef4444' }}
+              >
+                {totalItems}
+              </span>
+            )}
+          </button>
         </div>
       </div>
-
+    </div>
+  </div>
+</div>
       {/* Menu Items Grid with Lazy Loading */}
-      <div className="relative container mx-auto px-6 py-16">
-        {/* Islamic Pattern Background */}
-        <div className="absolute inset-0 pointer-events-none">
-          <svg
-            className="w-full h-full"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <defs>
-              <pattern id="islamicPattern" width="30" height="30" patternUnits="userSpaceOnUse">
-                <g
-                  fill="none"
-                  stroke={colors.secondary}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M15 4v7 M15 19v7 M4 15h7 M19 15h7" />
-                  <circle cx="15" cy="15" r="2" fill={colors.secondary} />
-                </g>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#islamicPattern)" opacity="0.12" />
-          </svg>
-        </div>
-
+      <div className="relative py-8 sm:py-12 md:py-16">
+        
+        {/* الباترن الإسلامي - بيغطي القسم كله */}
+        
         {/* المحتوى - المنتجات */}
         <div className="relative container mx-auto px-3 sm:px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
@@ -676,12 +688,21 @@ export default function Home() {
 
                 {/* Product Details */}
                 <div className="p-2.5 sm:p-3 md:p-4 lg:p-5 xl:p-6 flex flex-col flex-grow">
-                  <h3 
-                    className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black mb-1.5 sm:mb-2 md:mb-3 transition-all duration-300 bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent line-clamp-2 leading-relaxed"
-                    style={{ paddingTop: '0.15em', paddingBottom: '0.15em' }}
-                  >
-                    {item[language].name}
-                  </h3>
+<div className="w-full">
+  <h3 
+    className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black mb-1.5 sm:mb-2 md:mb-3 transition-all duration-300 line-clamp-2 leading-relaxed w-fit"
+    style={{ 
+      paddingTop: '0.2em', 
+      paddingBottom: '0.2em',
+      background: 'linear-gradient(90deg, white 0%, #fef08a 70%, #facc15 100%)',
+      backgroundClip: 'text',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent'
+    }}
+  >
+    {item[language].name}
+  </h3>
+</div>
                   <p className="text-xs leading-snug sm:leading-relaxed mb-2 sm:mb-3 md:mb-4 lg:mb-5 flex-grow line-clamp-2 sm:line-clamp-3" style={{ color: colors.secondary + 'CC' }}>
                     {item[language].description}
                   </p>
@@ -719,104 +740,132 @@ export default function Home() {
       </div>
 
       {/* About Section */}
-      <div id='about' className="text-white py-8 sm:py-12 md:py-16 border-t" style={{ backgroundColor: colors.background, borderColor: colors.accent }}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3" style={{ color: colors.text }}>
-              {restaurant.name}
-            </h2>
-            <p className="text-base sm:text-lg md:text-xl mb-3 sm:mb-4 font-medium" style={{ color: colors.secondary }}>
-              {restaurant.tagline}
-            </p>
-            <p className="text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 opacity-90" style={{ color: colors.text }}>
-              {restaurant.description}
-            </p>
-            <div className="flex justify-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
-              {hero.features.map((feature, index) => (
-                <div 
-                  key={index} 
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border transition-all duration-300 hover:scale-105" 
-                  style={{ 
-                    backgroundColor: colors.cardBg,
-                    borderColor: colors.accent
-                  }}
-                >
-                  <span className="text-xs sm:text-sm" style={{ color: colors.secondary }}>✓</span>
-                  <span className="text-xs sm:text-sm font-medium" style={{ color: colors.text }}>
-                    {feature}
-                  </span>
-                </div>
-              ))}
+      <div 
+        id='about' 
+        ref={el => categoryRefs.current['about'] = el}
+        data-category-id="about"
+        className="text-white py-8 sm:py-12 md:py-16 border-t" 
+        style={{ backgroundColor: colors.background, borderColor: colors.accent }}
+      >
+        {visibleCategories.has('about') ? (
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-4xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3" style={{ color: colors.text }}>
+                {restaurant.name}
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl mb-3 sm:mb-4 font-medium" style={{ color: colors.secondary }}>
+                {restaurant.tagline}
+              </p>
+              <p className="text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 opacity-90" style={{ color: colors.text }}>
+                {restaurant.description}
+              </p>
+              <div className="flex justify-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
+                {hero.features.map((feature, index) => (
+                  <div 
+                    key={index} 
+                    className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border transition-all duration-300 hover:scale-105" 
+                    style={{ 
+                      backgroundColor: colors.cardBg,
+                      borderColor: colors.accent
+                    }}
+                  >
+                    <span className="text-xs sm:text-sm" style={{ color: colors.secondary }}>✓</span>
+                    <span className="text-xs sm:text-sm font-medium" style={{ color: colors.text }}>
+                      {feature}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="container mx-auto px-4 sm:px-6 py-12">
+            <div className="flex items-center justify-center">
+              <Loader className="w-8 h-8 animate-spin" style={{ color: colors.secondary }} />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Contact Section */}
-      <div id='contact' className="text-white py-8 sm:py-12 md:py-16 border-t" style={{ backgroundColor: colors.cardBg, borderColor: colors.accent }}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8 md:mb-10">
-            <h3 className="text-2xl sm:text-3xl font-bold" style={{ color: colors.text }}>
-              {t.contactUs}
-            </h3>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
-            <div 
-              className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105" 
-              style={{ 
-                backgroundColor: colors.background,
-                borderColor: colors.accent
-              }}
-            >
-              <Phone className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
-              <div className="text-center">
-                <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
-                  الهاتف / Phone
-                </p>
-                <p className="text-base sm:text-lg font-bold" style={{ color: colors.text }}>
-                  {restaurant.phone}
-                </p>
-              </div>
+      <div 
+        id='contact' 
+        ref={el => categoryRefs.current['contact'] = el}
+        data-category-id="contact"
+        className="text-white py-8 sm:py-12 md:py-16 border-t" 
+        style={{ backgroundColor: colors.cardBg, borderColor: colors.accent }}
+      >
+        {visibleCategories.has('contact') ? (
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="text-center mb-6 sm:mb-8 md:mb-10">
+              <h3 className="text-2xl sm:text-3xl font-bold" style={{ color: colors.text }}>
+                {t.contactUs}
+              </h3>
             </div>
             
-            <div 
-              className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105" 
-              style={{ 
-                backgroundColor: colors.background,
-                borderColor: colors.accent
-              }}
-            >
-              <MapPin className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
-              <div className="text-center">
-                <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
-                  الموقع / Location
-                </p>
-                <p className="text-sm sm:text-base font-bold" style={{ color: colors.text }}>
-                  {restaurant.location}
-                </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
+              <div 
+                className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105" 
+                style={{ 
+                  backgroundColor: colors.background,
+                  borderColor: colors.accent
+                }}
+              >
+                <Phone className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
+                <div className="text-center">
+                  <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
+                    الهاتف / Phone
+                  </p>
+                  <p className="text-base sm:text-lg font-bold" style={{ color: colors.text }}>
+                    {restaurant.phone}
+                  </p>
+                </div>
               </div>
-            </div>
-            
-            <div 
-              className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105 sm:col-span-2 md:col-span-1" 
-              style={{ 
-                backgroundColor: colors.background,
-                borderColor: colors.accent
-              }}
-            >
-              <Clock className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
-              <div className="text-center">
-                <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
-                  {t.openingHours}
-                </p>
-                <p className="text-sm sm:text-base font-bold" style={{ color: colors.text }}>
-                  {t.dailyHours}
-                </p>
+              
+              <div 
+                className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105" 
+                style={{ 
+                  backgroundColor: colors.background,
+                  borderColor: colors.accent
+                }}
+              >
+                <MapPin className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
+                <div className="text-center">
+                  <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
+                    الموقع / Location
+                  </p>
+                  <p className="text-sm sm:text-base font-bold" style={{ color: colors.text }}>
+                    {restaurant.location}
+                  </p>
+                </div>
+              </div>
+              
+              <div 
+                className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105 sm:col-span-2 md:col-span-1" 
+                style={{ 
+                  backgroundColor: colors.background,
+                  borderColor: colors.accent
+                }}
+              >
+                <Clock className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
+                <div className="text-center">
+                  <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
+                    {t.openingHours}
+                  </p>
+                  <p className="text-sm sm:text-base font-bold" style={{ color: colors.text }}>
+                    {t.dailyHours}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="container mx-auto px-4 sm:px-6 py-12">
+            <div className="flex items-center justify-center">
+              <Loader className="w-8 h-8 animate-spin" style={{ color: colors.secondary }} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
     </>
