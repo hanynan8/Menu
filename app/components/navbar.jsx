@@ -64,7 +64,6 @@ const RestaurantNavbar = () => {
     const controlNavbar = () => {
       const currentScrollY = window.scrollY;
       
-      // إخفاء/إظهار الـ Navbar
       if (currentScrollY < 200) {
         setIsVisible(true);
       } else {
@@ -72,7 +71,6 @@ const RestaurantNavbar = () => {
         setIsMenuOpen(false);
       }
       
-      // إظهار/إخفاء زرار الصعود لأعلى
       if (currentScrollY > 400) {
         setShowScrollTop(true);
       } else {
@@ -99,7 +97,6 @@ const RestaurantNavbar = () => {
     secondary: "#CD853F",
     accent: "#8B4513",
     background: "#1A1410",
-    // cardBg: "#2D2420",
     cardBg: "rgb(28 17 14)",
     text: "#F5DEB3"
   };
@@ -148,25 +145,23 @@ const RestaurantNavbar = () => {
     setShowLogoutModal(false);
   };
 
-  // لو في خطأ، اعرض رسالة بسيطة
   if (error) {
     return (
       <div className="flex items-center justify-center h-16 bg-red-900/50 text-red-200">
-        <p className="text-sm">{language === 'ar' ? 'خطأ في تحميل البيانات' : 'Error loading data'}</p>
+        <p className="text-sm px-4">{language === 'ar' ? 'خطأ في تحميل البيانات' : 'Error loading data'}</p>
       </div>
     );
   }
 
-  // لو البيانات لسه بتحمّل، اعرض Navbar فاضي
   if (!navbarData) {
     return (
       <nav 
         className="shadow-lg fixed top-0 left-0 right-0 z-50"
         style={{ backgroundColor: colors.cardBg }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="w-32 h-8 animate-pulse rounded" style={{ backgroundColor: colors.accent }}></div>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-20">
+            <div className="w-24 sm:w-32 h-6 sm:h-8 animate-pulse rounded" style={{ backgroundColor: colors.accent }}></div>
           </div>
         </div>
       </nav>
@@ -183,57 +178,51 @@ const RestaurantNavbar = () => {
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
         <>
-          {/* Overlay */}
           <div 
             className="fixed inset-0 bg-black/70 z-[100] backdrop-blur-sm"
             style={{ animation: 'fadeIn 0.3s ease-in-out' }}
             onClick={cancelLogout}
           />
           
-          {/* Modal */}
           <div 
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-md mx-4"
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-md mx-4 px-4"
             style={{ animation: 'scaleIn 0.3s ease-out' }}
           >
             <div 
-              className="rounded-2xl p-8 shadow-2xl border-2"
+              className="rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-2xl border-2"
               style={{ 
                 backgroundColor: colors.cardBg,
                 borderColor: colors.secondary
               }}
             >
-              {/* Icon */}
               <div 
-                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
                 style={{ 
                   backgroundColor: colors.primary + '20',
-                  border: `3px solid ${colors.primary}`
+                  border: `2px sm:3px solid ${colors.primary}`
                 }}
               >
-                <LogOut size={32} style={{ color: colors.primary }} />
+                <LogOut size={window.innerWidth < 640 ? 24 : 32} style={{ color: colors.primary }} />
               </div>
               
-              {/* Title */}
               <h3 
-                className="text-2xl font-black text-center mb-4"
+                className="text-xl sm:text-2xl font-black text-center mb-3 sm:mb-4"
                 style={{ color: colors.text }}
               >
                 {t.confirmLogoutTitle}
               </h3>
               
-              {/* Message */}
               <p 
-                className="text-center mb-8 leading-relaxed"
+                className="text-sm sm:text-base text-center mb-6 sm:mb-8 leading-relaxed px-2"
                 style={{ color: colors.secondary }}
               >
                 {t.confirmLogoutMessage}
               </p>
               
-              {/* Buttons */}
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   onClick={cancelLogout}
-                  className="flex-1 rounded-xl font-bold transition-all duration-300 hover:scale-105 border-2"
+                  className="w-full sm:flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl font-bold transition-all duration-300 hover:scale-105 border-2 text-sm sm:text-base"
                   style={{ 
                     backgroundColor: 'transparent',
                     borderColor: colors.secondary,
@@ -245,7 +234,7 @@ const RestaurantNavbar = () => {
                 
                 <button
                   onClick={confirmLogout}
-                  className="flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg"
+                  className="w-full sm:flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg text-sm sm:text-base"
                   style={{ 
                     backgroundColor: '#ef4444',
                     color: 'white'
@@ -257,7 +246,6 @@ const RestaurantNavbar = () => {
             </div>
           </div>
           
-          {/* CSS Animations */}
           <style jsx>{`
             @keyframes fadeIn {
               from { opacity: 0; }
@@ -280,22 +268,22 @@ const RestaurantNavbar = () => {
       
       {/* Navbar */}
       <nav 
-        className={`shadow-lg fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out  ${
+        className={`shadow-lg fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
           isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
         }`}
         style={{ backgroundColor: colors.cardBg }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-20">
             
             {/* Logo */}
-          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div 
                 className="rounded-full overflow-hidden shadow-lg border-2 flex items-center justify-center"
                 style={{ 
                   borderColor: colors.secondary,
-                  width: '65px',
-                  height: '65px'
+                  width: '50px',
+                  height: '50px'
                 }}
               >
                 <img
@@ -310,7 +298,7 @@ const RestaurantNavbar = () => {
                 />
               </div>
               <span 
-                className="text-2xl font-bold"
+                className="text-base sm:text-xl md:text-2xl font-bold"
                 style={{ color: colors.text }}
               >
                 {logo.name}
@@ -318,12 +306,12 @@ const RestaurantNavbar = () => {
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden lg:flex items-center gap-4 xl:gap-6">
               {menu_items.map((item) => (
                 <a
                   key={item.id}
                   href={item.link}
-                  className="px-4 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                  className="px-3 xl:px-4 py-2 rounded-md text-sm xl:text-base font-medium transition-colors duration-200 whitespace-nowrap"
                   style={{
                     color: colors.text,
                     backgroundColor: item.active ? colors.primary : 'transparent'
@@ -343,19 +331,19 @@ const RestaurantNavbar = () => {
                 </a>
               ))}
               
-              {/* Cart Button */}
+              {/* Cart Button - Desktop Only */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:scale-105"
+                className="relative hidden lg:flex items-center gap-2 px-3 xl:px-4 py-2 rounded-md font-medium transition-all duration-200 hover:scale-105"
                 style={{
                   color: colors.text,
                   backgroundColor: colors.accent
                 }}
               >
-                <ShoppingCart size={20} />
+                <ShoppingCart size={18} />
                 {totalItems > 0 && (
                   <span 
-                    className="absolute -top-2 -right-2 min-w-[24px] h-6 rounded-full flex items-center justify-center text-xs font-bold text-white px-1.5 animate-pulse"
+                    className="absolute -top-2 -right-2 min-w-[22px] h-5 xl:min-w-[24px] xl:h-6 rounded-full flex items-center justify-center text-xs font-bold text-white px-1.5 animate-pulse"
                     style={{ backgroundColor: '#ef4444' }}
                   >
                     {totalItems}
@@ -366,30 +354,30 @@ const RestaurantNavbar = () => {
               {/* Language Toggle */}
               <button
                 onClick={toggleLanguage}
-                className="flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:scale-105"
+                className="flex items-center gap-2 px-3 xl:px-4 py-2 rounded-md font-medium transition-all duration-200 hover:scale-105 whitespace-nowrap"
                 style={{
                   color: colors.text,
                   backgroundColor: colors.accent
                 }}
                 title={language === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'}
               >
-                <Globe size={18} />
-                <span className="font-bold">{language === 'ar' ? 'EN' : 'عربي'}</span>
+                <Globe size={16} />
+                <span className="font-bold text-sm">{language === 'ar' ? 'EN' : 'عربي'}</span>
               </button>
 
               {/* Auth Section */}
               {status === 'loading' ? (
                 <div 
-                  className="px-4 py-2 rounded-md animate-pulse"
+                  className="px-3 xl:px-4 py-2 rounded-md animate-pulse"
                   style={{ backgroundColor: colors.accent }}
                 >
-                  <div className="h-5 w-20 bg-gray-400 rounded"></div>
+                  <div className="h-5 w-16 xl:w-20 bg-gray-400 rounded"></div>
                 </div>
               ) : session ? (
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-md" style={{ backgroundColor: colors.accent }}>
-                    <User size={18} style={{ color: colors.text }} />
-                    <span className="font-medium" style={{ color: colors.text }}>
+                  <div className="flex items-center gap-2 px-3 xl:px-4 py-2 rounded-md" style={{ backgroundColor: colors.accent }}>
+                    <User size={16} style={{ color: colors.text }} />
+                    <span className="font-medium text-sm whitespace-nowrap" style={{ color: colors.text }}>
                       {t.welcome}, {session.user?.name?.split(' ')[0] || 'User'}
                     </span>
                   </div>
@@ -401,103 +389,85 @@ const RestaurantNavbar = () => {
                     }}
                     title={t.logout}
                   >
-                    <LogOut size={20} />
+                    <LogOut size={18} />
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="flex items-center gap-2 px-4 py-2 rounded-md font-bold transition-all duration-200 hover:scale-105"
+                  className="flex items-center gap-2 px-3 xl:px-4 py-2 rounded-md font-bold transition-all duration-200 hover:scale-105 whitespace-nowrap"
                   style={{
                     color: 'white',
                     backgroundColor: colors.primary
                   }}
                 >
-                  <LogIn size={18} />
-                  <span>{t.login}</span>
+                  <LogIn size={16} />
+                  <span className="text-sm">{t.login}</span>
                 </button>
               )}
             </div>
 
             {/* Mobile Menu Buttons */}
-            <div className="md:hidden flex items-center gap-2">
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 rounded-md transition-all duration-200"
-                style={{ color: colors.text }}
-              >
-                <ShoppingCart size={20} />
-                {totalItems > 0 && (
-                  <span 
-                    className="absolute -top-1 -right-1 min-w-[20px] h-5 rounded-full flex items-center justify-center text-xs font-bold text-white px-1 animate-pulse"
-                    style={{ backgroundColor: '#ef4444' }}
-                  >
-                    {totalItems}
-                  </span>
-                )}
-              </button>
-
+            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+              
               <button
                 onClick={toggleLanguage}
-                className="p-2 rounded-md transition-all duration-200"
-                style={{ color: colors.text }}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md font-medium transition-all duration-200 hover:scale-105 whitespace-nowrap"
+                style={{
+                  color: colors.text,
+                  backgroundColor: colors.accent
+                }}
                 title={language === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'}
               >
-                <Globe size={20} />
+                <Globe size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="font-bold text-xs sm:text-sm">{language === 'ar' ? 'EN' : 'عربي'}</span>
               </button>
-
-              {/* Mobile Auth Button */}
-              {status === 'loading' ? (
-                <div className="w-10 h-10 animate-pulse rounded-md" style={{ backgroundColor: colors.accent }}></div>
-              ) : session ? (
-                <>
-                  <div className="p-2 rounded-md" style={{ backgroundColor: colors.accent }}>
-                    <User size={20} style={{ color: colors.text }} />
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="p-2 rounded-md transition-all duration-200"
-                    style={{ 
-                      color: '#ef4444',
-                      backgroundColor: colors.accent
-                    }}
-                    title={t.logout}
-                  >
-                    <LogOut size={20} />
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={handleLogin}
-                  className="p-2 rounded-md transition-all duration-200"
-                  style={{ 
-                    color: 'white',
-                    backgroundColor: colors.primary
-                  }}
-                >
-                  <LogIn size={20} />
-                </button>
-              )}
               
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-md"
+                className="p-1.5 sm:p-2 rounded-md"
                 style={{ color: colors.text }}
               >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {isMenuOpen ? <X size={22} className="sm:w-6 sm:h-6" /> : <Menu size={22} className="sm:w-6 sm:h-6" />}
               </button>
             </div>
           </div>
 
           {/* Mobile Menu Dropdown */}
           {isMenuOpen && (
-            <div className="md:hidden pb-4">
-              <div className="flex flex-col space-y-2">
+            <div className="lg:hidden pb-3 sm:pb-4">
+              <div className="flex flex-col space-y-1.5 sm:space-y-2">
+                {/* Cart Button in Mobile Menu */}
+                <button
+                  onClick={() => {
+                    setIsCartOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="relative flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-md text-sm sm:text-base font-medium"
+                  style={{
+                    color: colors.text,
+                    backgroundColor: colors.accent
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <ShoppingCart size={18} />
+                    <span>{language === 'ar' ? 'سلة المشتريات' : 'Shopping Cart'}</span>
+                  </div>
+                  {totalItems > 0 && (
+                    <span 
+                      className="min-w-[24px] h-6 rounded-full flex items-center justify-center text-xs font-bold text-white px-2 animate-pulse"
+                      style={{ backgroundColor: '#ef4444' }}
+                    >
+                      {totalItems}
+                    </span>
+                  )}
+                </button>
+
                 {menu_items.map((item) => (
                   <a
                     key={item.id}
                     href={item.link}
-                    className="px-4 py-2 rounded-md text-base font-medium"
+                    className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-md text-sm sm:text-base font-medium"
                     style={{
                       color: colors.text,
                       backgroundColor: item.active ? colors.primary : 'transparent'
@@ -508,22 +478,50 @@ const RestaurantNavbar = () => {
                   </a>
                 ))}
                 
-                {/* User Info in Mobile Menu */}
-                {session && (
+                {/* Auth Section in Mobile Menu */}
+                {status === 'loading' ? (
                   <div 
-                    className="px-4 py-2 rounded-md font-medium flex items-center justify-between"
+                    className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-md animate-pulse"
+                    style={{ backgroundColor: colors.accent }}
+                  >
+                    <div className="h-5 w-20 bg-gray-400 rounded"></div>
+                  </div>
+                ) : session ? (
+                  <div 
+                    className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-md font-medium flex items-center justify-between text-sm sm:text-base"
                     style={{ backgroundColor: colors.accent, color: colors.text }}
                   >
-                    <span>{t.welcome}, {session.user?.name || 'User'}</span>
+                    <div className="flex items-center gap-2">
+                      <User size={18} />
+                      <span className="truncate">{t.welcome}, {session.user?.name?.split(' ')[0] || 'User'}</span>
+                    </div>
                     <button
-                      onClick={handleLogout}
-                      className="p-1"
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="p-1 flex-shrink-0 hover:scale-110 transition-all"
                       style={{ color: '#ef4444' }}
                       title={t.logout}
                     >
                       <LogOut size={18} />
                     </button>
                   </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleLogin();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-md text-sm sm:text-base font-bold transition-all duration-200"
+                    style={{
+                      color: 'white',
+                      backgroundColor: colors.primary
+                    }}
+                  >
+                    <LogIn size={18} />
+                    <span>{t.login}</span>
+                  </button>
                 )}
               </div>
             </div>
@@ -534,7 +532,7 @@ const RestaurantNavbar = () => {
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed ${language === 'ar' ? 'left-6' : 'right-6'} bottom-6 z-50 group transition-all duration-500 ease-in-out rounded-full ${
+        className={`fixed ${language === 'ar' ? 'left-4 sm:left-6' : 'right-4 sm:right-6'} bottom-4 sm:bottom-6 z-50 group transition-all duration-500 ease-in-out rounded-full ${
           showScrollTop 
             ? 'opacity-100 translate-y-0 scale-100' 
             : 'opacity-0 translate-y-20 scale-0 pointer-events-none'
@@ -542,14 +540,12 @@ const RestaurantNavbar = () => {
         title={t.scrollToTop}
         aria-label={t.scrollToTop}
       >
-        <div className="relative w-14 h-14">
-          {/* Glow Effect */}
+        <div className="relative w-12 h-12 sm:w-14 sm:h-14">
           <div 
             className="absolute inset-0 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"
             style={{ backgroundColor: colors.secondary }}
           ></div>
           
-          {/* Button Content */}
           <div 
             className="relative w-full h-full flex items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 border-2"
             style={{ 
@@ -559,9 +555,9 @@ const RestaurantNavbar = () => {
             }}
           >
             <ArrowUp 
-              size={24} 
+              size={20}
               strokeWidth={3}
-              className="text-white group-hover:animate-bounce"
+              className="text-white group-hover:animate-bounce sm:w-6 sm:h-6"
             />
           </div>
         </div>

@@ -8,7 +8,6 @@ const authOptions = {
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
         name: { label: "Name", type: "text" },
         phone: { label: "Phone", type: "text" },
         address: { label: "Address", type: "text" },
@@ -16,7 +15,7 @@ const authOptions = {
       },
 
       async authorize(credentials) {
-        if (!credentials?.email) {
+        if (!credentials?.name) {
           return null;
         }
 
@@ -36,24 +35,22 @@ const authOptions = {
           
           let user = null;
           
-          // محاولة إيجاد الuser بطرق مختلفة
           if (Array.isArray(authData)) {
-            user = authData.find(u => u.email?.toLowerCase() === credentials.email.toLowerCase());
+            user = authData.find(u => u.name?.toLowerCase().trim() === credentials.name.toLowerCase().trim());
           } else if (authData.auth && Array.isArray(authData.auth)) {
-            user = authData.auth.find(u => u.email?.toLowerCase() === credentials.email.toLowerCase());
+            user = authData.auth.find(u => u.name?.toLowerCase().trim() === credentials.name.toLowerCase().trim());
           } else if (authData.data && Array.isArray(authData.data)) {
-            user = authData.data.find(u => u.email?.toLowerCase() === credentials.email.toLowerCase());
+            user = authData.data.find(u => u.name?.toLowerCase().trim() === credentials.name.toLowerCase().trim());
           }
 
           if (!user) {
-            console.log('User not found for email:', credentials.email);
+            console.log('User not found for name:', credentials.name);
             return null;
           }
 
           return {
-            id: user._id?.toString() || user.email,
-            email: user.email,
-            name: user.name || credentials.name,
+            id: user._id?.toString() || user.name,
+            name: user.name,
             phone: user.phone || credentials.phone,
             address: user.address || credentials.address,
             paymentMethod: user.paymentMethod || credentials.paymentMethod || 'cash'
@@ -82,7 +79,6 @@ const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.email = user.email;
         token.name = user.name;
         token.phone = user.phone;
         token.address = user.address;
@@ -94,7 +90,6 @@ const authOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id;
-        session.user.email = token.email;
         session.user.name = token.name;
         session.user.phone = token.phone;
         session.user.address = token.address;

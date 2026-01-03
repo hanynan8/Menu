@@ -21,7 +21,8 @@ export default function MenuAdmin() {
     ar: { name: '', price: '', currency: 'درهم', description: '', hoverDescription: '' },
     en: { name: '', price: '', currency: 'AED', description: '', hoverDescription: '' },
     image: '',
-    hoverImage: ''
+    hoverImage: '',
+    available: true
   });
 
   useEffect(() => {
@@ -324,6 +325,44 @@ export default function MenuAdmin() {
             {renderImageField('image', formData.image, (val) => setFormData({...formData, image: val}))}
             {renderImageField('hoverImage', formData.hoverImage, (val) => setFormData({...formData, hoverImage: val}))}
           </div>
+{/* Availability Selection */}
+<div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+  <span className="text-sm font-medium text-gray-700 block mb-2">حالة الطبق:</span>
+  <div className="flex gap-3">
+    <button
+      onClick={() => setFormData({...formData, available: true})}
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium transition-colors ${
+        formData.available 
+          ? 'bg-green-500 text-white' 
+          : 'bg-white text-gray-600 border border-gray-300'
+      }`}
+      type="button"
+    >
+      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+        formData.available ? 'border-white' : 'border-gray-300'
+      }`}>
+        {formData.available && <div className="w-2 h-2 rounded-full bg-white" />}
+      </div>
+      <span>متاح</span>
+    </button>
+    <button
+      onClick={() => setFormData({...formData, available: false})}
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium transition-colors ${
+        !formData.available 
+          ? 'bg-red-500 text-white' 
+          : 'bg-white text-gray-600 border border-gray-300'
+      }`}
+      type="button"
+    >
+      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+        !formData.available ? 'border-white' : 'border-gray-300'
+      }`}>
+        {!formData.available && <div className="w-2 h-2 rounded-full bg-white" />}
+      </div>
+      <span>غير متاح</span>
+    </button>
+  </div>
+</div>
         </div>
 
         <div className="flex gap-3 mt-8 pt-6 border-t-2 border-gray-200">
@@ -343,7 +382,8 @@ export default function MenuAdmin() {
                 ar: { name: '', price: '', currency: 'درهم', description: '', hoverDescription: '' },
                 en: { name: '', price: '', currency: 'AED', description: '', hoverDescription: '' },
                 image: '',
-                hoverImage: ''
+                hoverImage: '',
+                available: true
               });
             }}
             className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg"
@@ -1033,7 +1073,8 @@ export default function MenuAdmin() {
                 ar: { name: '', price: '', currency: 'درهم', description: '', hoverDescription: '' },
                 en: { name: '', price: '', currency: 'AED', description: '', hoverDescription: '' },
                 image: '',
-                hoverImage: ''
+                hoverImage: '',
+                available: true
               });
               setShowAddForm(true);
             }}
@@ -1073,23 +1114,32 @@ export default function MenuAdmin() {
               }
               
               return (
-                <div key={`${item.categoryId}-${item.id}`} className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all border-2 border-gray-100 overflow-hidden">
+                <div key={`${item.categoryId}-${item.id}`} className={`bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all border-2 overflow-hidden ${item.available ? 'border-gray-100' : 'border-red-300 opacity-75'}`}>
                   {item.image && (
-                    <img 
-                      src={item.image} 
-                      alt={item.ar?.name} 
-                      className="w-full h-48 object-cover"
-                      onError={(e) => {
-                        e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect fill="%23f3f4f6" width="400" height="200"/><text x="200" y="110" text-anchor="middle" fill="%236b7280">صورة</text></svg>';
-                      }}
-                    />
+                    <div className="relative">
+                      <img 
+                        src={item.image} 
+                        alt={item.ar?.name} 
+                        className="w-full h-48 object-cover"
+                        onError={(e) => {
+                          e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect fill="%23f3f4f6" width="400" height="200"/><text x="200" y="110" text-anchor="middle" fill="%236b7280">صورة</text></svg>';
+                        }}
+                      />
+                      {!item.available && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                          <span className="bg-red-500 text-white px-4 py-2 rounded-lg font-bold text-lg">غير متاح</span>
+                        </div>
+                      )}
+                    </div>
                   )}
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="text-xl font-bold text-gray-800 flex-1">{item.ar?.name}</h3>
-                      <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                        {item.categoryNameAr}
-                      </span>
+                      <div className="flex gap-2">
+                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+                          {item.categoryNameAr}
+                        </span>
+                      </div>
                     </div>
                     {item.ar?.description && (
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.ar.description}</p>
@@ -1099,6 +1149,7 @@ export default function MenuAdmin() {
                         {item.ar.price} {item.ar.currency}
                       </p>
                     )}
+                    
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
@@ -1118,7 +1169,8 @@ export default function MenuAdmin() {
                               hoverDescription: item?.en?.hoverDescription || ''
                             },
                             image: item?.image || '',
-                            hoverImage: item?.hoverImage || ''
+                            hoverImage: item?.hoverImage || '',
+                            available: item?.available !== false
                           });
                           setEditingItem({ ...item, categoryId: item.categoryId });
                           setShowAddForm(false);

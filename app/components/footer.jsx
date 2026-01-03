@@ -7,8 +7,10 @@ export default function Footer() {
   const { language } = useLanguage();
   const [footerData, setFooterData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
 
   useEffect(() => {
+    // جلب بيانات الفوتر
     fetch('/api/data?collection=footer')
       .then(res => res.json())
       .then(result => {
@@ -19,7 +21,54 @@ export default function Footer() {
         console.error('Error fetching footer data:', err);
         setLoading(false);
       });
+
+    // جلب رقم الواتساب
+    fetch('/api/data?collection=whatsapp')
+      .then(res => res.json())
+      .then(data => {
+        let whatsappData = null;
+        if (data.whatsapp && Array.isArray(data.whatsapp) && data.whatsapp.length > 0) {
+          whatsappData = data.whatsapp[0];
+        } else if (Array.isArray(data) && data.length > 0) {
+          whatsappData = data[0];
+        }
+        
+        if (whatsappData?.whatsApp) {
+          const cleanNumber = whatsappData.whatsApp.replace(/[+\s]/g, '');
+          setWhatsappNumber(cleanNumber);
+        } else {
+          setWhatsappNumber('201201061216');
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching WhatsApp number:', err);
+        setWhatsappNumber('201201061216');
+      });
   }, []);
+
+  const handleOrderNow = () => {
+    if (!whatsappNumber) {
+      alert(language === 'ar' ? 'عذراً، رقم الواتساب غير متوفر حالياً' : 'Sorry, WhatsApp number is not available');
+      return;
+    }
+
+    const message = language === 'ar' 
+      ? `مرحباً 
+أود الاستفسار عن منتجاتكم والأسعار.
+
+أرجو تزويدي بالتفاصيل والعروض المتاحة.
+
+شكراً لكم `
+      : `Hello 
+I would like to inquire about your products and prices.
+
+Please provide me with details and available offers.
+
+Thank you `;
+
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   if (loading || !footerData) {
     return null;
@@ -64,13 +113,13 @@ export default function Footer() {
       />
 
       {/* Main Footer Content */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="container mx-auto px-4 sm:px-6 py-12 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           
           {/* About Section */}
           <div className="space-y-4">
             <h3 
-              className="text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
             >
               {footer.about.title}
             </h3>
@@ -80,14 +129,12 @@ export default function Footer() {
             >
               {footer.about.description}
             </p>
-            {/* Logo or decorative element */}
-        
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
             <h3 
-              className="text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
             >
               {footer.quickLinks.title}
             </h3>
@@ -96,7 +143,7 @@ export default function Footer() {
                 <li key={index}>
                   <a
                     href={link.url}
-                    className="group flex items-center gap-2 transition-all duration-300 hover:translate-x-2"
+                    className={`group flex items-center gap-2 transition-all duration-300 ${language === 'ar' ? 'hover:-translate-x-2' : 'hover:translate-x-2'}`}
                     style={{ color: colors.text + 'CC' }}
                   >
                     <ChevronRight 
@@ -115,11 +162,11 @@ export default function Footer() {
           {/* Contact Info */}
           <div className="space-y-4">
             <h3 
-              className="text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
             >
               {footer.contact.title}
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-5">
               <li className="flex items-start gap-3 group">
                 <Phone 
                   className="w-5 h-5 mt-0.5 flex-shrink-0 transition-colors duration-300 group-hover:text-white" 
@@ -167,7 +214,7 @@ export default function Footer() {
                   <p className="text-xs font-medium mb-1" style={{ color: colors.secondary }}>
                     {language === 'ar' ? 'الموقع' : 'Location'}
                   </p>
-                  <p className="text-sm font-bold" style={{ color: colors.text }}>
+                  <p className="text-sm font-bold break-words" style={{ color: colors.text }}>
                     {footer.contact.location}
                   </p>
                 </div>
@@ -182,7 +229,7 @@ export default function Footer() {
                   <p className="text-xs font-medium mb-1" style={{ color: colors.secondary }}>
                     {language === 'ar' ? 'ساعات العمل' : 'Hours'}
                   </p>
-                  <p className="text-sm font-bold" style={{ color: colors.text }}>
+                  <p className="text-sm font-bold break-words" style={{ color: colors.text }}>
                     {footer.contact.hours}
                   </p>
                 </div>
@@ -193,11 +240,11 @@ export default function Footer() {
           {/* Social Media */}
           <div className="space-y-4">
             <h3 
-              className="text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
+              className="text-xl md:text-2xl font-black mb-4 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-transparent"
             >
               {footer.social.title}
             </h3>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-4">
               {footer.social.platforms.map((platform, index) => (
                 <a
                   key={index}
@@ -216,7 +263,7 @@ export default function Footer() {
                     style={{ backgroundColor: colors.primary + '60' }}
                   />
                   <div 
-                    className="relative transition-colors duration-300"
+                    className="relative transition-colors duration-300 group-hover:text-white"
                     style={{ color: colors.secondary }}
                   >
                     {getSocialIcon(platform.icon)}
@@ -227,23 +274,25 @@ export default function Footer() {
 
             {/* Newsletter or CTA */}
             <div 
-              className="mt-8 p-4 rounded-xl border-2"
+              className="mt-6 md:mt-8 p-4 rounded-xl border-2"
               style={{ 
                 backgroundColor: colors.cardBg,
                 borderColor: colors.secondary + '40'
               }}
             >
-              <p className="text-sm font-bold mb-2" style={{ color: colors.text }}>
+              <p className="text-sm font-bold mb-3" style={{ color: colors.text }}>
                 {language === 'ar' ? 'اطلب الآن واستمتع بأشهى الأطباق' : 'Order Now and Enjoy Delicious Dishes'}
               </p>
               <button 
-                className="w-full text-white px-4 py-2 rounded-lg font-bold shadow-lg hover:scale-105 transition-all duration-300 border"
+                onClick={handleOrderNow}
+                className="w-full text-white px-4 py-3 rounded-lg font-bold shadow-lg hover:scale-105 transition-all duration-300 border text-sm md:text-base flex items-center justify-center gap-2"
                 style={{ 
                   backgroundColor: colors.primary,
                   borderColor: colors.secondary + '4D'
                 }}
               >
-                {language === 'ar' ? 'اطلب الآن' : 'Order Now'}
+                <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
+                <span>{language === 'ar' ? 'اطلب الآن' : 'Order Now'}</span>
               </button>
             </div>
           </div>
@@ -258,19 +307,19 @@ export default function Footer() {
           backgroundColor: colors.cardBg
         }}
       >
-        <div className="container mx-auto px-6">
-            <p 
-              className="text-sm font-medium text-center"
-              style={{ color: colors.text + 'CC' }}
-            >
-              {footer.copyright}
-            </p>
-          </div>
+        <div className="container mx-auto px-4 sm:px-6">
+          <p 
+            className="text-sm font-medium text-center"
+            style={{ color: colors.text + 'CC' }}
+          >
+            {footer.copyright}
+          </p>
+        </div>
       </div>
 
       {/* Decorative background pattern */}
       <div 
-        className="absolute bottom-0 left-0 w-full h-32 opacity-10 pointer-events-none"
+        className="absolute inset-x-0 bottom-0 h-24 md:h-32 opacity-10 pointer-events-none"
         style={{
           backgroundImage: `repeating-linear-gradient(45deg, ${colors.secondary} 0, ${colors.secondary} 1px, transparent 0, transparent 50%)`,
           backgroundSize: '10px 10px'

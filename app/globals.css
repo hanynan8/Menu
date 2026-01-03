@@ -1,131 +1,17 @@
-/* ========== مجموعة خطوط مطاعم عصرية وأنيقة ========== */
-  @import url('https://fonts.googleapis.com/css2?family=Lalezar&family=Lateef&display=swap');
-
-
-/* المجموعة 1: كلاسيك فاخر */
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
-
-/* المجموعة 2: عصري أنيق */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
-
-/* المجموعة 3: مودرن راقي */
-@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Lora:wght@400;500;600;700&display=swap');
-
-/* المجموعة 4: بسيط وناعم */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Crimson+Text:wght@400;600;700&display=swap');
-
-/* المجموعة 5: فخم جداً */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
-
-/* المجموعة 6: معاصر وجريء */
-@import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&family=Libre+Caslon+Text:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ========== اختر مجموعة واحدة من التالي ========== */
-
-/* المجموعة 1: كلاسيك فاخر (Tajawal + Playfair Display) */
-/* * {
-  font-family: 'Tajawal', 'Playfair Display', sans-serif;
-}
-[dir="rtl"] * {
-  font-family: 'Tajawal', sans-serif;
-}
-[dir="ltr"] * {
-  font-family: 'Playfair Display', serif;
-} */
-
-/* المجموعة 2: عصري أنيق (Cairo + Cormorant Garamond)  */
-/* * {
-  font-family: 'Cairo', 'Cormorant Garamond', sans-serif;
-}
-[dir="rtl"] * {
-  font-family: 'Cairo', sans-serif;
-}
-[dir="ltr"] * {
-  font-family: 'Cormorant Garamond', serif;
-} */
-
-
-/* المجموعة 3: مودرن راقي (Almarai + Lora)  */
-/* 
+/* Amiri للعربي والإنجليزي */
 * {
-  font-family: 'Almarai', 'Lora', sans-serif;
-}
-[dir="rtl"] * {
-  font-family: 'Almarai', sans-serif;
-}
-[dir="ltr"] * {
-  font-family: 'Lora', serif;
-} */
-
-
-/* المجموعة 4: بسيط وناعم (IBM Plex Sans Arabic + Crimson Text)  */
-
-/* * {
-  font-family: 'IBM Plex Sans Arabic', 'Crimson Text', sans-serif;
-}
-[dir="rtl"] * {
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
-}
-[dir="ltr"] * {
-  font-family: 'Crimson Text', serif;
-} */
-
-
-
-/* المجموعة 5: فخم جداً (Noto Kufi Arabic + Libre Baskerville) 
-* {
-  font-family: 'Noto Kufi Arabic', 'Libre Baskerville', sans-serif;
-  }
-  [dir="rtl"] * {
-    font-family: 'Noto Kufi Arabic', sans-serif;
-    }
-    [dir="ltr"] * {
-  font-family: 'Libre Baskerville', serif;
-  }
-  */
-  
-  /* المجموعة 6: معاصر وجريء (Readex Pro + Libre Caslon Text) 
-  * {
-  font-family: 'Readex Pro', 'Libre Caslon Text', sans-serif;
-  }
-  [dir="rtl"] * {
-  font-family: 'Readex Pro', sans-serif;
-}
-[dir="ltr"] * {
-  font-family: 'Libre Caslon Text', serif;
-  }
-  */
-
-  /* المجموعة بتاعتي يامعلم */
-  
-  * {
-    font-family: 'IBM Plex Sans Arabic', 'Crimson Text', sans-serif;
-  }
-.rtl-calligraphy {
-  font-family: 'Lalezar', 'Lateef', sans-serif;
-  font-size: 48px;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  transform: skewX(-6deg);
-  -webkit-text-stroke: 1px rgba(0,0,0,0.12);
-  text-shadow:
-    0 1px 0 rgba(255,255,255,0.03),
-    0 6px 18px rgba(0,0,0,0.22);
-  display: inline-block;
+  font-family: 'Amiri', serif;
 }
 
-
-  [dir="ltr"] * {
-    font-family: 'Playfair Display', serif;
-    
-  }
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 2px;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 2px;
   transition: width s ease;
 }
 

@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useLanguage } from "../../../contexts/LanguageContext";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -28,9 +28,9 @@ export default function LoginPage() {
   const translations = {
     ar: {
       title: "تسجيل الدخول",
-      email: "البريد الإلكتروني",
+      name: "الاسم الكامل",
       submit: "دخول",
-      emailRequired: "البريد الإلكتروني مطلوب",
+      nameRequired: "الاسم مطلوب",
       userNotFound: "المستخدم غير موجود",
       errorOccurred: "حدث خطأ، حاول مرة أخرى",
       loggingIn: "جاري تسجيل الدخول...",
@@ -39,9 +39,9 @@ export default function LoginPage() {
     },
     en: {
       title: "Login",
-      email: "Email",
+      name: "Full Name",
       submit: "Login",
-      emailRequired: "Email is required",
+      nameRequired: "Name is required",
       userNotFound: "User not found",
       errorOccurred: "An error occurred, please try again",
       loggingIn: "Logging in...",
@@ -56,15 +56,15 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    if (!email) {
-      setError(t.emailRequired);
+    if (!name) {
+      setError(t.nameRequired);
       return;
     }
 
     setLoading(true);
 
     try {
-      console.log('Checking user for email:', email);
+      console.log('Checking user for name:', name);
       
       const checkResponse = await fetch('/api/data?collection=auth');
       
@@ -91,9 +91,9 @@ export default function LoginPage() {
       
       if (usersArray && usersArray.length > 0) {
         user = usersArray.find(u => {
-          const userEmail = (u.email || '').toLowerCase().trim();
-          const searchEmail = email.toLowerCase().trim();
-          return userEmail === searchEmail;
+          const userName = (u.name || '').toLowerCase().trim();
+          const searchName = name.toLowerCase().trim();
+          return userName === searchName;
         });
       }
 
@@ -107,7 +107,6 @@ export default function LoginPage() {
       console.log('User found, signing in...');
 
       const res = await signIn("credentials", {
-        email: user.email,
         name: user.name,
         phone: user.phone,
         address: user.address,
@@ -161,10 +160,10 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder={t.email}
-            value={email}
+            onChange={(e) => setName(e.target.value)}
+            type="text"
+            placeholder={t.name}
+            value={name}
             disabled={loading}
             className="border-2 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             style={{

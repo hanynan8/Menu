@@ -9,7 +9,6 @@ import { useLanguage } from "../../../contexts/LanguageContext";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
@@ -33,7 +32,6 @@ export default function RegisterPage() {
     ar: {
       title: "إنشاء حساب جديد",
       name: "الاسم الكامل",
-      email: "البريد الإلكتروني",
       phone: "رقم الهاتف",
       address: "العنوان",
       paymentMethod: "طريقة الدفع المفضلة",
@@ -42,7 +40,7 @@ export default function RegisterPage() {
       submit: "تسجيل",
       allFields: "جميع الحقول مطلوبة",
       errorOccurred: "حدث خطأ، حاول مرة أخرى",
-      userExists: "البريد الإلكتروني مسجل بالفعل، يرجى تسجيل الدخول",
+      nameExists: "الاسم مستخدم بالفعل، يرجى اختيار اسم آخر",
       registering: "جاري التسجيل...",
       successMessage: "تم التسجيل بنجاح! جاري التحويل...",
       haveAccount: "لديك حساب بالفعل؟",
@@ -51,7 +49,6 @@ export default function RegisterPage() {
     en: {
       title: "Create New Account",
       name: "Full Name",
-      email: "Email",
       phone: "Phone Number",
       address: "Address",
       paymentMethod: "Preferred Payment Method",
@@ -60,7 +57,7 @@ export default function RegisterPage() {
       submit: "Register",
       allFields: "All fields are required",
       errorOccurred: "An error occurred, please try again",
-      userExists: "Email already registered, please login",
+      nameExists: "Name already exists, please choose another name",
       registering: "Registering...",
       successMessage: "Registration successful! Redirecting...",
       haveAccount: "Already have an account?",
@@ -75,7 +72,7 @@ export default function RegisterPage() {
     setError("");
     setSuccess(false);
 
-    if (!name || !email || !phone || !address) {
+    if (!name || !phone || !address) {
       setError(t.allFields);
       return;
     }
@@ -83,7 +80,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      console.log('Checking if user exists...');
+      console.log('Checking if name exists...');
       
       const checkResponse = await fetch('/api/data?collection=auth');
       
@@ -96,7 +93,7 @@ export default function RegisterPage() {
 
       const authData = await checkResponse.json();
       
-      // التحقق من وجود الإيميل في قاعدة البيانات
+      // التحقق من وجود الاسم في قاعدة البيانات
       let usersArray = null;
       if (authData.auth && Array.isArray(authData.auth)) {
         usersArray = authData.auth;
@@ -107,12 +104,12 @@ export default function RegisterPage() {
       }
 
       if (usersArray) {
-        const userExists = usersArray.find(u => 
-          u.email?.toLowerCase().trim() === email.toLowerCase().trim()
+        const nameExists = usersArray.find(u => 
+          u.name?.toLowerCase().trim() === name.toLowerCase().trim()
         );
         
-        if (userExists) {
-          setError(t.userExists);
+        if (nameExists) {
+          setError(t.nameExists);
           setLoading(false);
           return;
         }
@@ -125,8 +122,7 @@ export default function RegisterPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email.toLowerCase().trim(),
-          name,
+          name: name.trim(),
           phone,
           address,
           paymentMethod,
@@ -180,20 +176,6 @@ export default function RegisterPage() {
             type="text"
             placeholder={t.name}
             value={name}
-            disabled={loading}
-            className="border-2 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              backgroundColor: colors.background,
-              color: colors.text,
-              borderColor: colors.accent,
-            }}
-          />
-          
-          <input
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder={t.email}
-            value={email}
             disabled={loading}
             className="border-2 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             style={{

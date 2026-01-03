@@ -10,7 +10,36 @@ export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [notification, setNotification] = useState(null);
   const [currentLanguage, setCurrentLanguage] = useState('ar');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const { data: session } = useSession();
+
+  // جلب رقم الواتساب من الـ API
+  useEffect(() => {
+    const fetchWhatsAppNumber = async () => {
+      try {
+        const response = await fetch('/api/data?collection=whatsapp');
+        const data = await response.json();
+        
+        let whatsappData = null;
+        if (data.whatsapp && Array.isArray(data.whatsapp) && data.whatsapp.length > 0) {
+          whatsappData = data.whatsapp[0];
+        } else if (Array.isArray(data) && data.length > 0) {
+          whatsappData = data[0];
+        }
+        
+        if (whatsappData?.whatsApp) {
+          // إزالة علامة + والمسافات
+          const cleanNumber = whatsappData.whatsApp.replace(/[+\s]/g, '');
+          setWhatsappNumber(cleanNumber);
+        }
+      } catch (error) {
+        console.error('Error fetching WhatsApp number:', error);
+        // رقم افتراضي في حالة فشل الـ API
+      }
+    };
+
+    fetchWhatsAppNumber();
+  }, []);
 
   const showNotification = (messageAr, messageEn, type = 'success') => {
     setNotification({ 
@@ -44,7 +73,7 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     const loadCart = async () => {
-      if (session?.user?.email) {
+      if (session?.user?.name) {
         const localCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
         
         if (localCart.length > 0) {
@@ -56,7 +85,7 @@ export const CartProvider = ({ children }) => {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  email: session.user.email,
+                  name: session.user.name,
                   item: item,
                   quantity: item.quantity,
                   createdAt: new Date().toISOString()
@@ -80,7 +109,7 @@ export const CartProvider = ({ children }) => {
             cartArray = data;
           }
 
-          const userCartItems = cartArray.filter(item => item.email === session.user.email);
+          const userCartItems = cartArray.filter(item => item.name === session.user.name);
           
           const groupedItems = {};
           userCartItems.forEach(cartItem => {
@@ -112,7 +141,8 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (item) => {
     console.log('Adding to cart:', item);
-    
+
+    // تحديث الـ UI فوراً للسرعة
     setCartItems(prev => {
       const existingItem = prev.find(i => i.id === item.id);
       if (existingItem) {
@@ -127,15 +157,16 @@ export const CartProvider = ({ children }) => {
 
     showNotification('تم إضافة المنتج للسلة بنجاح ✓', 'Product added to cart successfully ✓', 'success');
 
-    if (session?.user?.email) {
+    if (session?.user?.name) {
       try {
+        // إضافة للـ API في الخلفية
         const response = await fetch('/api/data?collection=cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            email: session.user.email,
+            name: session.user.name,
             item: item,
             quantity: 1,
             createdAt: new Date().toISOString()
@@ -143,12 +174,13 @@ export const CartProvider = ({ children }) => {
         });
         
         if (!response.ok) {
-          console.warn('Failed to save to API, but item added to local state');
+          console.warn('Failed to save to API');
         }
       } catch (error) {
-        console.warn('Error adding to cart API (item still added locally):', error);
+        console.warn('Error adding to cart API:', error);
       }
     } else {
+      // للـ Guest Users - نستخدم localStorage
       try {
         const localCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
         const existingItem = localCart.find(i => i.id === item.id);
@@ -169,11 +201,12 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (itemId) => {
     console.log('Removing from cart:', itemId);
     
+    // تحديث الـ UI فوراً
     setCartItems(prev => prev.filter(item => item.id !== itemId));
     
     showNotification('تم حذف المنتج من السلة', 'Product removed from cart', 'warning');
 
-    if (session?.user?.email) {
+    if (session?.user?.name) {
       try {
         const response = await fetch('/api/data?collection=cart');
         const data = await response.json();
@@ -186,7 +219,7 @@ export const CartProvider = ({ children }) => {
         }
 
         const itemsToDelete = cartArray.filter(
-          item => item.email === session.user.email && item.item.id === itemId
+          item => item.name === session.user.name && item.item.id === itemId
         );
         
         for (const item of itemsToDelete) {
@@ -210,6 +243,7 @@ export const CartProvider = ({ children }) => {
       return;
     }
     
+    // تحديث الـ UI فوراً
     setCartItems(prev => 
       prev.map(item => 
         item.id === itemId 
@@ -218,7 +252,7 @@ export const CartProvider = ({ children }) => {
       )
     );
     
-    if (session?.user?.email) {
+    if (session?.user?.name) {
       try {
         const response = await fetch('/api/data?collection=cart');
         const data = await response.json();
@@ -231,7 +265,7 @@ export const CartProvider = ({ children }) => {
         }
 
         const userItems = cartArray.filter(
-          item => item.email === session.user.email && item.item.id === itemId
+          item => item.name === session.user.name && item.item.id === itemId
         );
         
         for (const item of userItems) {
@@ -248,7 +282,7 @@ export const CartProvider = ({ children }) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              email: session.user.email,
+              name: session.user.name,
               item: cartItem,
               quantity: newQuantity,
               updatedAt: new Date().toISOString()
@@ -268,10 +302,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = async () => {
+    // تحديث الـ UI فوراً
     setCartItems([]);
     showNotification('تم إفراغ السلة', 'Cart cleared', 'info');
     
-    if (session?.user?.email) {
+    if (session?.user?.name) {
       try {
         const response = await fetch('/api/data?collection=cart');
         const data = await response.json();
@@ -283,7 +318,7 @@ export const CartProvider = ({ children }) => {
           cartArray = data;
         }
 
-        const userItems = cartArray.filter(item => item.email === session.user.email);
+        const userItems = cartArray.filter(item => item.name === session.user.name);
         
         for (const item of userItems) {
           await fetch(`/api/data?collection=cart&id=${item._id}`, {
@@ -323,7 +358,8 @@ export const CartProvider = ({ children }) => {
       notification,
       extractPrice,
       currentLanguage,
-      setCurrentLanguage
+      setCurrentLanguage,
+      whatsappNumber
     }}>
       {children}
     </CartContext.Provider>
@@ -383,6 +419,7 @@ export const CartNotification = () => {
     </div>
   );
 };
+
 const Cart = ({ language = 'ar' }) => {
   const { 
     cartItems, 
@@ -393,12 +430,13 @@ const Cart = ({ language = 'ar' }) => {
     clearCart,
     getTotalPrice,
     extractPrice,
-    setCurrentLanguage
+    setCurrentLanguage,
+    whatsappNumber
   } = useCart();
 
   const { data: session } = useSession();
   const [isClosing, setIsClosing] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // أضف هنا
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     setCurrentLanguage(language);
@@ -474,20 +512,27 @@ const Cart = ({ language = 'ar' }) => {
   const t = translations[language];
 
   const handleLogout = () => {
-    setShowLogoutModal(true); // غير هنا
+    setShowLogoutModal(true);
   };
 
-  const confirmLogout = async () => { // أضف هنا
+  const confirmLogout = async () => {
     setShowLogoutModal(false);
     await signOut({ callbackUrl: '/' });
   };
 
-  const cancelLogout = () => { // أضف هنا
+  const cancelLogout = () => {
     setShowLogoutModal(false);
   };
-const handleCheckout = async () => {
-    if (!session?.user?.email) {
+
+  const handleCheckout = async () => {
+    if (!session?.user?.name) {
       window.location.href = '/login';
+      return;
+    }
+
+    // التحقق من وجود رقم واتساب
+    if (!whatsappNumber) {
+      alert(language === 'ar' ? 'عذراً، رقم الواتساب غير متوفر حالياً' : 'Sorry, WhatsApp number is not available');
       return;
     }
 
@@ -502,7 +547,7 @@ const handleCheckout = async () => {
         usersArray = userData;
       }
 
-      const currentUser = usersArray.find(u => u.email === session.user.email);
+      const currentUser = usersArray.find(u => u.name === session.user.name);
       
       if (!currentUser) {
         alert('خطأ في تحميل بيانات المستخدم');
@@ -512,7 +557,6 @@ const handleCheckout = async () => {
       let message = `*🛒 طلب جديد*\n\n`;
       message += `*📋 معلومات العميل:*\n`;
       message += `👤 *الاسم:* ${currentUser.name}\n`;
-      message += `📧 *البريد:* ${currentUser.email}\n`;
       message += `📱 *الهاتف:* ${currentUser.phone}\n`;
       message += `📍 *العنوان:* ${currentUser.address}\n`;
       message += `💳 *طريقة الدفع:* ${currentUser.paymentMethod === 'cash' ? 'كاش عند الاستلام 💵' : 'فيزا 💳'}\n\n`;
@@ -530,7 +574,6 @@ const handleCheckout = async () => {
       message += `━━━━━━━━━━━━━━━━\n`;
       message += `💵 *الإجمالي النهائي: ${getTotalPrice().toFixed(2)} ${language === 'ar' ? 'درهم' : 'AED'}*`;
 
-      const whatsappNumber = '201201061216';
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
 
@@ -543,10 +586,8 @@ const handleCheckout = async () => {
 
   return (
     <>
-      {/* Logout Confirmation Modal - أضف الكود ده كله */}
       {showLogoutModal && (
         <>
-          {/* Overlay */}
           <div 
             className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             style={{ 
@@ -556,23 +597,21 @@ const handleCheckout = async () => {
             onClick={cancelLogout}
           />
           
-{/* Modal */}
-<div 
-  className="fixed top-1/2 left-1/2 w-full max-w-md mx-4"
-  style={{ 
-    zIndex: 201,
-    transform: 'translate(-50%, -50%)'
-  }}
->
-  <div 
-    className="rounded-2xl p-8 shadow-2xl border-2"
-    style={{ 
-      backgroundColor: colors.cardBg,
-      borderColor: colors.secondary,
-      animation: 'scaleInCenter 0.3s ease-out'
-    }}
-  >
-              {/* Icon */}
+          <div 
+            className="fixed top-1/2 left-1/2 w-full max-w-md mx-4"
+            style={{ 
+              zIndex: 201,
+              transform: 'translate(-50%, -50%)'
+            }}
+          >
+            <div 
+              className="rounded-2xl p-8 shadow-2xl border-2"
+              style={{ 
+                backgroundColor: colors.cardBg,
+                borderColor: colors.secondary,
+                animation: 'scaleInCenter 0.3s ease-out'
+              }}
+            >
               <div 
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
                 style={{ 
@@ -583,7 +622,6 @@ const handleCheckout = async () => {
                 <LogOut size={32} style={{ color: colors.primary }} />
               </div>
               
-              {/* Title */}
               <h3 
                 className="text-2xl font-black text-center mb-4"
                 style={{ color: colors.text }}
@@ -591,7 +629,6 @@ const handleCheckout = async () => {
                 {t.confirmLogoutTitle}
               </h3>
               
-              {/* Message */}
               <p 
                 className="text-center mb-8 leading-relaxed"
                 style={{ color: colors.secondary }}
@@ -599,7 +636,6 @@ const handleCheckout = async () => {
                 {t.confirmLogoutMessage}
               </p>
               
-              {/* Buttons */}
               <div className="flex gap-4">
                 <button
                   onClick={cancelLogout}
@@ -629,7 +665,6 @@ const handleCheckout = async () => {
         </>
       )}
 
-      {/* باقي كود الـ Cart زي ما هو... */}
       <div 
         className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         onClick={handleClose}
@@ -794,70 +829,70 @@ const handleCheckout = async () => {
         )}
       </div>
 
-<style jsx>{`
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
-  
-  @keyframes slideInRight {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
-  }
-  
-  @keyframes slideInLeft {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
-  }
-  
-  @keyframes slideOutRight {
-    from { transform: translateX(0); }
-    to { transform: translateX(100%); }
-  }
-  
-  @keyframes slideOutLeft {
-    from { transform: translateX(0); }
-    to { transform: translateX(-100%); }
-  }
-  
-  @keyframes scaleIn {
-    from { 
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    to { 
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  @keyframes scaleInCenter {
-    from { 
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    to { 
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -20px);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-  }
-`}</style>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        
+        @keyframes slideInRight {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        
+        @keyframes slideInLeft {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
+        }
+        
+        @keyframes slideOutRight {
+          from { transform: translateX(0); }
+          to { transform: translateX(100%); }
+        }
+        
+        @keyframes slideOutLeft {
+          from { transform: translateX(0); }
+          to { transform: translateX(-100%); }
+        }
+        
+        @keyframes scaleIn {
+          from { 
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to { 
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        @keyframes scaleInCenter {
+          from { 
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to { 
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+      `}</style>
     </>
   );
 };
