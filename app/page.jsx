@@ -14,6 +14,7 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [clickedItem, setClickedItem] = useState(null);
+  const [loadedImages, setLoadedImages] = useState(new Set());
   const { language } = useLanguage();
   const { addToCart, getTotalItems, setIsCartOpen } = useCart();
   const { data: session } = useSession();
@@ -43,6 +44,29 @@ export default function Home() {
       return () => clearInterval(interval);
     }
   }, [data]);
+
+  // Intersection Observer for lazy loading images - MUST be before any conditional returns
+  useEffect(() => {
+    if (!data) return;
+
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const itemId = entry.target.getAttribute('data-item-id');
+          if (itemId) {
+            setLoadedImages(prev => new Set([...prev, itemId]));
+          }
+        }
+      });
+    }, {
+      rootMargin: '100px'
+    });
+
+    const imageContainers = document.querySelectorAll('[data-item-id]');
+    imageContainers.forEach(container => imageObserver.observe(container));
+
+    return () => imageObserver.disconnect();
+  }, [data, selectedCategory, searchQuery]);
 
   if (loading) {
     return (
@@ -106,7 +130,6 @@ export default function Home() {
     return matchesCategory && matchesSearch;
   });
 
-
   const nextSlide = () => {
     setCurrentSlide(prev => 
       prev === heroSlider.slides.length - 1 ? 0 : prev + 1
@@ -162,7 +185,6 @@ export default function Home() {
     addToCart(cartItem);
   };
 
-  // دالة لإضافة منتج السلايدر إلى السلة
   const handleAddSlideToCart = (slide) => {
     const slideItem = {
       id: `slide-${slide.id}`,
@@ -179,7 +201,7 @@ export default function Home() {
     <>
       <Navbar />
     <div className="min-h-screen" style={{ backgroundColor: colors.background }} dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Hero Slider - Ultra Responsive */}
+      {/* Hero Slider */}
       <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] overflow-hidden">
         {heroSlider.slides.map((slide, index) => (
           <div
@@ -225,9 +247,7 @@ export default function Home() {
             <div className="absolute inset-0 z-20 flex items-end pb-4 sm:pb-6 md:pb-10 lg:pb-0 lg:items-start lg:pt-24 xl:pt-28">
               <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 w-full">
                 <div className={`max-w-3xl ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                 
                   <div className="mb-2 sm:mb-3 md:mb-4 lg:mb-6">
-                   
                     <div
                       className="inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-sm px-1.5 sm:px-2 md:px-2.5 lg:px-3.5 py-0.5 sm:py-0.5 md:py-1 rounded-full mb-1 sm:mb-1.5 md:mb-2 lg:mb-3 shadow-md border"
                       style={{
@@ -256,7 +276,6 @@ export default function Home() {
                     </p>
                  
                     <div className="flex flex-row lg:flex-row gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 items-center justify-start">
-                     
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -304,7 +323,6 @@ export default function Home() {
                           </span>
                         </div>
                       </div>
-                     
                     </div>
                   </div>
                 </div>
@@ -546,175 +564,160 @@ export default function Home() {
           </div>
         </div>
       </div>
-      
-{/* Menu Items Grid */}
-<div className="relative py-8 sm:py-12 md:py-16">
-  
-  {/* الباترن الإسلامي - بيغطي القسم كله */}
-  <div className="absolute inset-0 pointer-events-none overflow-hidden">
-    <svg
-      className="w-full h-full"
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="xMidYMid slice"
-      aria-hidden="true"
-    >
-      <defs>
-        <pattern 
-          id="islamicPatternDense" 
-          x="80"
-          y="0"
-          width="57"
-          height="57"
-          patternUnits="userSpaceOnUse"
-          patternTransform="scale(0.7)" // للتحكم في حجم الباترن
-        >
-          <g>
-            {/* المربع الخلفي للباترن */}
-            <path 
-              d="M0,0 L57,0 L57,57 L0,57 Z" 
-              fill={colors.secondary} 
-              opacity="0.1"
-            />
-            
-            {/* الشكل الإسلامي الرئيسي (النجمة الثمانية) */}
-            <path 
-              d="M27,4 L31,5 L34,8 L34,22 L48,22 L53,27 L51,31 L48,34 L34,34 L34,48 L28,53 L23,48 L23,34 L9,34 L4,29 L6,25 L9,22 L23,22 L23,8 Z" 
-              fill={colors.background} 
-              opacity="0.8"
-            />
-            
-            {/* الزاوية السفلية اليسار */}
-            <path 
-              d="M0,33 L6,38 L17,39 L18,50 L24,57 L0,57 Z" 
-              fill={colors.background} 
-              opacity="1"
-            />
-            
-            {/* الزاوية السفلية اليمين */}
-            <path 
-              d="M56,33 L57,33 L57,57 L34,57 L40,50 L41,39 L52,38 Z" 
-              fill={colors.background} 
-              opacity="1"
-            />
-            
-            {/* الزاوية العلوية اليمين */}
-            <path 
-              d="M34,0 L57,0 L57,23 L51,18 L40,17 L39,6 Z" 
-              fill={colors.background} 
-              opacity="1"
-            />
-            
-            {/* الزاوية العلوية اليسار */}
-            <path 
-              d="M0,0 L23,0 L18,6 L17,17 L6,18 L0,23 Z" 
-              fill={colors.background} 
-              opacity="1"
-            />
-          </g>
-        </pattern>
-      </defs>
-      
-      {/* المستطيل اللي بيطبق الباترن على كل المساحة */}
-      <rect width="100%" height="100%" fill="url(#islamicPatternDense)" />
-    </svg>
-  </div>
 
-  {/* المحتوى - المنتجات */}
-  <div className="relative container mx-auto px-3 sm:px-4 md:px-6">
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-      {filteredItems.map(item => (
-        <div
-          key={item.id}
-          className="group rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transform hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 border-2 cursor-pointer flex flex-col"
-          style={{ 
-            backgroundColor: colors.cardBg,
-            borderColor: (hoveredItem === item.id || clickedItem === item.id) ? colors.secondary + '99' : colors.accent + '4D'
-          }}
-          onMouseEnter={() => setHoveredItem(item.id)}
-          onMouseLeave={() => setHoveredItem(null)}
-          onClick={() => setClickedItem(clickedItem === item.id ? null : item.id)}
-        >
-          <div className="relative h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72 overflow-hidden flex-shrink-0">
-            <img
-              src={item.image}
-              alt={item[language].name}
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out"
-              style={{ 
-                opacity: ((hoveredItem === item.id || clickedItem === item.id) && item.hoverImage) ? 0 : 1,
-                transform: ((hoveredItem === item.id || clickedItem === item.id) && item.hoverImage) ? 'scale(1.2)' : 'scale(1)',
-                zIndex: 1
-              }}
-            />
-            {item.hoverImage && (
-              <img
-                src={item.hoverImage}
-                alt={item[language].name}
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out"
-                style={{ 
-                  opacity: (hoveredItem === item.id || clickedItem === item.id) ? 1 : 0,
-                  transform: (hoveredItem === item.id || clickedItem === item.id) ? 'scale(1.15)' : 'scale(1)',
-                  zIndex: 2
-                }}
-              />
-            )}
-            
-            <div className="absolute inset-0 group-hover:bg-black/20 transition-all duration-500 z-10" />
-            
-            <div className="absolute inset-0 flex items-end p-2 sm:p-3 md:p-4 lg:p-6 z-20">
-              <p className={`text-amber-100 text-xs leading-relaxed transition-all duration-500 ${
-                (hoveredItem === item.id || clickedItem === item.id) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-              }`}>
-                {item[language].hoverDescription}
-              </p>
-            </div>
-            {!item.available && (
-              <div className={`absolute top-1 sm:top-2 ${language === 'ar' ? 'right-1 sm:right-2' : 'left-1 sm:left-2'} bg-red-600 text-white font-bold text-[10px] sm:text-xs px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-3 rounded-full z-30`}>
-                {t.unavailable}
-              </div>
-            )}
-          </div>
-
-          <div className="p-2.5 sm:p-3 md:p-4 lg:p-5 xl:p-6 flex flex-col flex-grow">
-            <h3 
-              className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black mb-1.5 sm:mb-2 md:mb-3 transition-all duration-300 bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent line-clamp-2 leading-relaxed"
-              style={{ paddingTop: '0.15em', paddingBottom: '0.15em' }}
-            >
-              {item[language].name}
-            </h3>
-            <p className="text-xs leading-snug sm:leading-relaxed mb-2 sm:mb-3 md:mb-4 lg:mb-5 flex-grow line-clamp-2 sm:line-clamp-3" style={{ color: colors.secondary + 'CC' }}>
-              {item[language].description}
-            </p>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-2 md:gap-3 mt-auto">
-              <div className="flex items-baseline gap-1">
-                <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-black" style={{ color: colors.secondary }}>{item[language].price}</span>
-                <span className="text-xs sm:text-sm font-bold" style={{ color: colors.secondary + 'CC' }}>{item[language].currency}</span>
-              </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(item);
-                }}
-                className="w-full sm:w-auto flex items-center justify-center gap-1 sm:gap-1.5 text-white px-2 sm:px-2.5 md:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-bold shadow-lg transform hover:scale-105 sm:hover:scale-110 transition-all duration-300 border whitespace-nowrap text-xs" 
-                style={{ backgroundColor: colors.primary, borderColor: colors.secondary + '4D' }}
-              >
-                <ShoppingCart size={12} className="sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 flex-shrink-0" />
-                <span className='text-xs'>{t.addToCart}</span>
-              </button>
-            </div>
-          </div>
+      {/* Menu Items Grid with Lazy Loading */}
+      <div className="relative container mx-auto px-6 py-16">
+        {/* Islamic Pattern Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <svg
+            className="w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <pattern id="islamicPattern" width="30" height="30" patternUnits="userSpaceOnUse">
+                <g
+                  fill="none"
+                  stroke={colors.secondary}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M15 4v7 M15 19v7 M4 15h7 M19 15h7" />
+                  <circle cx="15" cy="15" r="2" fill={colors.secondary} />
+                </g>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#islamicPattern)" opacity="0.12" />
+          </svg>
         </div>
-      ))}
-    </div>
 
-    {filteredItems.length === 0 && (
-      <div className="text-center py-12 sm:py-16 md:py-20 px-4">
-        <div className="text-6xl sm:text-7xl md:text-8xl mb-4 sm:mb-6">🔍</div>
-        <h3 className="text-xl sm:text-2xl md:text-3xl font-black mb-2 sm:mb-3" style={{ color: colors.secondary }}>{t.noResults}</h3>
-        <p className="text-sm sm:text-base md:text-lg" style={{ color: colors.secondary + 'CC' }}>{t.tryDifferent}</p>
+        {/* المحتوى - المنتجات */}
+        <div className="relative container mx-auto px-3 sm:px-4 md:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+            {filteredItems.map(item => (
+              <div
+                key={item.id}
+                className={`group rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transform hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 border-2 cursor-pointer flex flex-col ${
+                  loadedImages.has(item.id) 
+                    ? 'opacity-100 scale-100' 
+                    : 'opacity-0 scale-95'
+                }`}
+                style={{ 
+                  backgroundColor: colors.cardBg,
+                  borderColor: (hoveredItem === item.id || clickedItem === item.id) ? colors.secondary + '99' : colors.accent + '4D'
+                }}
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
+                onClick={() => setClickedItem(clickedItem === item.id ? null : item.id)}
+              >
+                {/* Image Container with Lazy Loading */}
+                <div 
+                  className="relative h-40 sm:h-48 md:h-56 lg:h-64 xl:h-72 overflow-hidden flex-shrink-0" 
+                  data-item-id={item.id}
+                >
+                  {loadedImages.has(item.id) ? (
+                    <>
+                      <img
+                        src={item.image}
+                        alt={item[language].name}
+                        className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out"
+                        style={{ 
+                          opacity: ((hoveredItem === item.id || clickedItem === item.id) && item.hoverImage) ? 0 : 1,
+                          transform: ((hoveredItem === item.id || clickedItem === item.id) && item.hoverImage) ? 'scale(1.2)' : 'scale(1)',
+                          zIndex: 1
+                        }}
+                      />
+                      {item.hoverImage && (
+                        <img
+                          src={item.hoverImage}
+                          alt={item[language].name}
+                          className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out"
+                          style={{ 
+                            opacity: (hoveredItem === item.id || clickedItem === item.id) ? 1 : 0,
+                            transform: (hoveredItem === item.id || clickedItem === item.id) ? 'scale(1.15)' : 'scale(1)',
+                            zIndex: 2
+                          }}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <div 
+                      className="absolute inset-0 w-full h-full flex items-center justify-center" 
+                      style={{ backgroundColor: colors.primary + '40' }}
+                    >
+                      <div 
+                        className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent" 
+                        style={{ 
+                          borderColor: colors.secondary + '40', 
+                          borderTopColor: 'transparent' 
+                        }}
+                      ></div>
+                    </div>
+                  )}
+                  
+                  <div className="absolute inset-0 group-hover:bg-black/20 transition-all duration-500 z-10" />
+                  
+                  <div className="absolute inset-0 flex items-end p-2 sm:p-3 md:p-4 lg:p-6 z-20">
+                    <p className={`text-amber-100 text-xs leading-relaxed transition-all duration-500 ${
+                      (hoveredItem === item.id || clickedItem === item.id) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    }`}>
+                      {item[language].hoverDescription}
+                    </p>
+                  </div>
+                  
+                  {!item.available && (
+                    <div className={`absolute top-1 sm:top-2 ${language === 'ar' ? 'right-1 sm:right-2' : 'left-1 sm:left-2'} bg-red-600 text-white font-bold text-[10px] sm:text-xs px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-3 rounded-full z-30`}>
+                      {t.unavailable}
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Details */}
+                <div className="p-2.5 sm:p-3 md:p-4 lg:p-5 xl:p-6 flex flex-col flex-grow">
+                  <h3 
+                    className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black mb-1.5 sm:mb-2 md:mb-3 transition-all duration-300 bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent line-clamp-2 leading-relaxed"
+                    style={{ paddingTop: '0.15em', paddingBottom: '0.15em' }}
+                  >
+                    {item[language].name}
+                  </h3>
+                  <p className="text-xs leading-snug sm:leading-relaxed mb-2 sm:mb-3 md:mb-4 lg:mb-5 flex-grow line-clamp-2 sm:line-clamp-3" style={{ color: colors.secondary + 'CC' }}>
+                    {item[language].description}
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-2 md:gap-3 mt-auto">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-black" style={{ color: colors.secondary }}>{item[language].price}</span>
+                      <span className="text-xs sm:text-sm font-bold" style={{ color: colors.secondary + 'CC' }}>{item[language].currency}</span>
+                    </div>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(item);
+                      }}
+                      className="w-full sm:w-auto flex items-center justify-center gap-1 sm:gap-1.5 text-white px-2 sm:px-2.5 md:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-bold shadow-lg transform hover:scale-105 sm:hover:scale-110 transition-all duration-300 border whitespace-nowrap text-xs" 
+                      style={{ backgroundColor: colors.primary, borderColor: colors.secondary + '4D' }}
+                    >
+                      <ShoppingCart size={12} className="sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 flex-shrink-0" />
+                      <span className='text-xs'>{t.addToCart}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* No Results */}
+          {filteredItems.length === 0 && (
+            <div className="text-center py-12 sm:py-16 md:py-20 px-4">
+              <div className="text-6xl sm:text-7xl md:text-8xl mb-4 sm:mb-6">🔍</div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black mb-2 sm:mb-3" style={{ color: colors.secondary }}>{t.noResults}</h3>
+              <p className="text-sm sm:text-base md:text-lg" style={{ color: colors.secondary + 'CC' }}>{t.tryDifferent}</p>
+            </div>
+          )}
+        </div>
       </div>
-    )}
-  </div>
-</div>
+
       {/* About Section */}
       <div id='about' className="text-white py-8 sm:py-12 md:py-16 border-t" style={{ backgroundColor: colors.background, borderColor: colors.accent }}>
         <div className="container mx-auto px-4 sm:px-6">
