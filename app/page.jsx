@@ -281,7 +281,7 @@ export default function Home() {
               alt={slide[language].title}
               className="w-full h-full object-cover"
             />
-           
+          
             <div className="absolute inset-0 z-20 flex items-end pb-4 sm:pb-6 md:pb-10 lg:pb-0 lg:items-start lg:pt-24 xl:pt-28">
               <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 w-full">
                 <div className={`max-w-3xl ${language === 'ar' ? 'text-right' : 'text-left'}`}>
@@ -300,7 +300,7 @@ export default function Home() {
                     </div>
                   
                     <h1
-                      className="text-lg sm:text-base md:text-lg lg:text-3xl xl:text-4xl 2xl:text-5xl font-black bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent w-full lg:mb-1.5 leading-relaxed drop-shadow-2xl"
+                      className="text-lg sm:text-base md:text-lg lg:text-9xl xl:text-9xl 2xl:text-6xl font-black bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent w-full lg:mb-1.5 leading-relaxed drop-shadow-2xl"
                       style={{ paddingTop: '0.2em', paddingBottom: '0.2em' }}
                     >
                       {slide[language].title}
