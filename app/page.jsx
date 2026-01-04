@@ -300,14 +300,14 @@ export default function Home() {
                     </div>
                   
                     <h1
-                      className="text-lg sm:text-base md:text-lg lg:text-9xl xl:text-9xl 2xl:text-6xl font-black bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent w-full lg:mb-1.5 leading-relaxed drop-shadow-2xl"
+                      className="text-2xl sm:text-3xl md:text-3xl lg:text-5xl xl:text-6xl 2xl:text-6xl font-black bg-gradient-to-r from-white via-yellow-200 to-yellow-400 bg-clip-text text-transparent w-full lg:mb-1.5 leading-relaxed drop-shadow-2xl"
                       style={{ paddingTop: '0.2em', paddingBottom: '0.2em' }}
                     >
                       {slide[language].title}
                     </h1>
                   
                     <p
-                      className="text-[9px] mt-[-5px] sm:text-[10px] md:text-xs lg:text-base xl:text-lg mb-1.5 sm:mb-2 md:mb-2.5 lg:mb-3 xl:mb-4  leading-snug sm:leading-relaxed max-w-2xl font-medium drop-shadow-md line-clamp-2 sm:line-clamp-3 md:line-clamp-none"
+                      className="text-[14px] mt-[-5px] sm:text-[17px] md:text-[20px] lg:text-[25px] xl:text-[28px] mb-1.5 sm:mb-2 md:mb-2.5 lg:mb-3 xl:mb-4  leading-snug sm:leading-relaxed max-w-2xl font-medium drop-shadow-md line-clamp-2 sm:line-clamp-3 md:line-clamp-none"
                       style={{ color: colors.text + 'E6' }}
                     >
                       {slide[language].description}
@@ -690,7 +690,7 @@ export default function Home() {
                 <div className="p-2.5 sm:p-3 md:p-4 lg:p-5 xl:p-6 flex flex-col flex-grow">
 <div className="w-full">
   <h3 
-  className="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black sm:mb-2 md:mb-3 transition-all duration-300 leading-tight sm:leading-snug md:leading-normal lg:leading-relaxed w-fit"
+  className="text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black transition-all duration-300 leading-tight sm:leading-snug md:leading-normal lg:leading-relaxed w-fit"
     style={{ 
       paddingTop: '0.2em', 
       paddingBottom: '0.2em',
