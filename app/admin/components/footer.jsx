@@ -36,9 +36,9 @@ export default function FooterAdmin() {
       const response = await fetch(`${API_BASE_URL}?collection=footer`);
       const result = await response.json();
       setData(result);
-      showMessage('تم تحديث بيانات Footer بنجاح');
+      showMessage('Footer data updated successfully');
     } catch (error) {
-      showMessage('خطأ في جلب بيانات Footer', 'error');
+      showMessage('Error fetching footer data', 'error');
     }
     setLoading(false);
   };
@@ -53,15 +53,15 @@ export default function FooterAdmin() {
       });
     
       if (response.ok) {
-        showMessage('✓ تم إضافة العنصر بنجاح');
+        showMessage('✓ Item added successfully');
         setShowAddForm(false);
         setNewItem({});
         fetchData();
       } else {
-        throw new Error('فشل في إضافة العنصر');
+        throw new Error('Failed to add item');
       }
     } catch (error) {
-      showMessage('خطأ في إضافة العنصر: ' + error.message, 'error');
+      showMessage('Error adding item: ' + error.message, 'error');
     }
     setLoading(false);
   };
@@ -76,20 +76,20 @@ export default function FooterAdmin() {
       });
     
       if (response.ok) {
-        showMessage('✓ تم تحديث العنصر بنجاح');
+        showMessage('✓ Item updated successfully');
         setEditingItem(null);
         fetchData();
       } else {
-        throw new Error('فشل في تحديث العنصر');
+        throw new Error('Failed to update item');
       }
     } catch (error) {
-      showMessage('خطأ في تحديث العنصر: ' + error.message, 'error');
+      showMessage('Error updating item: ' + error.message, 'error');
     }
     setLoading(false);
   };
 
   const deleteItem = async (id) => {
-    if (!confirm('⚠️ هل أنت متأكد من حذف هذا العنصر؟')) return;
+    if (!confirm('⚠️ Are you sure you want to delete this item?')) return;
   
     setLoading(true);
     try {
@@ -98,13 +98,13 @@ export default function FooterAdmin() {
       });
     
       if (response.ok) {
-        showMessage('✓ تم حذف العنصر بنجاح');
+        showMessage('✓ Item deleted successfully');
         fetchData();
       } else {
-        throw new Error('فشل في حذف العنصر');
+        throw new Error('Failed to delete item');
       }
     } catch (error) {
-      showMessage('خطأ في حذف العنصر: ' + error.message, 'error');
+      showMessage('Error deleting item: ' + error.message, 'error');
     }
     setLoading(false);
   };
@@ -134,29 +134,29 @@ export default function FooterAdmin() {
   const renderFieldLabel = (field) => {
     const labels = {
       footer: 'Footer',
-      ar: 'العربية',
-      en: 'الإنجليزية',
-      about: 'عن',
-      quickLinks: 'روابط سريعة',
-      contact: 'تواصل معنا',
-      social: 'وسائل التواصل',
-      copyright: 'حقوق النشر',
-      poweredBy: 'تم التطوير بواسطة',
-      title: 'العنوان',
-      name: 'الاسم',
-      description: 'الوصف',
-      content: 'المحتوى',
-      phone: 'الهاتف',
-      email: 'البريد الإلكتروني',
-      address: 'العنوان',
-      location: 'الموقع',
-      hours: 'ساعات العمل',
-      link: 'الرابط',
-      links: 'الروابط',
-      platforms: 'المنصات',
-      text: 'النص',
-      url: 'الرابط',
-      icon: 'الأيقونة'
+      ar: 'Arabic',
+      en: 'English',
+      about: 'About',
+      quickLinks: 'Quick Links',
+      contact: 'Contact Us',
+      social: 'Social Media',
+      copyright: 'Copyright',
+      poweredBy: 'Powered By',
+      title: 'Title',
+      name: 'Name',
+      description: 'Description',
+      content: 'Content',
+      phone: 'Phone',
+      email: 'Email',
+      address: 'Address',
+      location: 'Location',
+      hours: 'Working Hours',
+      link: 'Link',
+      links: 'Links',
+      platforms: 'Platforms',
+      text: 'Text',
+      url: 'URL',
+      icon: 'Icon'
     };
     return labels[field] || field;
   };
@@ -173,7 +173,7 @@ export default function FooterAdmin() {
               <Layers size={16} />
               {renderFieldLabel(field)}
               <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">
-                {Object.keys(currentValue || {}).length} حقل
+                {Object.keys(currentValue || {}).length} fields
               </span>
             </label>
             <button
@@ -206,7 +206,7 @@ export default function FooterAdmin() {
               <Layers size={16} />
               {renderFieldLabel(field)}
               <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">
-                {(currentValue || []).length} عنصر
+                {(currentValue || []).length} items
               </span>
             </label>
             <button
@@ -223,31 +223,13 @@ export default function FooterAdmin() {
               {(currentValue || []).map((val, index) => (
                 <div key={index} className="p-3 bg-white rounded-lg border-2 border-blue-100">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="w-40 text-sm font-medium">عنصر #{index + 1}</span>
+                    <span className="w-40 text-sm font-medium">Item #{index + 1}</span>
                   </div>
                   <div className="ml-4">
                     {renderField(`${field}[${index}]`, val, currentData, isEditing, `${path}.${index}`)}
                   </div>
                 </div>
               ))}
-            
-              {/* <button
-                type="button"
-                onClick={() => {
-                  const arr = currentValue || [];
-                  let newVal = {};
-                  if (arr.length > 0) {
-                    Object.keys(arr[0]).forEach(k => { newVal[k] = ''; });
-                  }
-                  const newArr = [...arr, newVal];
-                  const updated = setNestedValue(isEditing ? editingItem : newItem, path, newArr);
-                  isEditing ? setEditingItem(updated) : setNewItem(updated);
-                }}
-                className="flex items-center gap-2 text-white bg-gradient-to-r from-green-500 to-green-600 text-sm py-3 px-4 rounded-lg w-full justify-center font-medium"
-              >
-                <Plus size={18} />
-                إضافة عنصر جديد
-              </button> */}
             </div>
           )}
         </div>
@@ -267,7 +249,7 @@ export default function FooterAdmin() {
               const updated = setNestedValue(isEditing ? editingItem : newItem, path, e.target.value);
               isEditing ? setEditingItem(updated) : setNewItem(updated);
             }}
-            placeholder="اكتب المحتوى هنا..."
+            placeholder="Enter content here..."
           />
         ) : (
           <input
@@ -339,7 +321,7 @@ export default function FooterAdmin() {
             disabled={loading}
           >
             {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />}
-            {isEditing ? 'حفظ التعديلات' : 'إضافة العنصر'}
+            {isEditing ? 'Save Changes' : 'Add Item'}
           </button>
           <button
             onClick={() => {
@@ -350,7 +332,7 @@ export default function FooterAdmin() {
             className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-lg font-medium"
           >
             <X size={18} />
-            إلغاء
+            Cancel
           </button>
         </div>
       </div>
@@ -360,7 +342,7 @@ export default function FooterAdmin() {
   const items = Array.isArray(data) ? data : data ? [data] : [];
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100" dir="rtl">
+    <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100">
       <div className="p-6 border-b-2 border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold flex items-center gap-3 text-blue-900">
@@ -374,7 +356,7 @@ export default function FooterAdmin() {
               disabled={loading}
             >
               <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-              تحديث
+              Refresh
             </button>
             <button
               onClick={() => {
@@ -385,7 +367,7 @@ export default function FooterAdmin() {
               className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-lg font-medium"
             >
               <Plus size={18} />
-              إضافة جديد
+              Add New
             </button>
           </div>
         </div>
@@ -408,7 +390,7 @@ export default function FooterAdmin() {
         {loading ? (
           <div className="text-center py-16">
             <Loader className="animate-spin mx-auto mb-6 text-blue-600" size={48} />
-            <p className="text-gray-600 text-xl">جاري التحميل...</p>
+            <p className="text-gray-600 text-xl">Loading...</p>
           </div>
         ) : (
           <>
@@ -416,7 +398,7 @@ export default function FooterAdmin() {
               <div className="mb-8 bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-300 rounded-2xl p-6">
                 <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-green-900">
                   <Plus size={28} />
-                  إضافة عنصر جديد
+                  Add New Item
                 </h3>
                 {renderForm(items[0] || {}, false)}
               </div>
@@ -432,7 +414,7 @@ export default function FooterAdmin() {
                     <div key={itemId} className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-l-8 border-blue-500">
                       <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-blue-900">
                         <Edit size={24} />
-                        تعديل العنصر #{index + 1}
+                        Edit Item #{index + 1}
                       </h3>
                       {renderForm(item, true)}
                     </div>
@@ -469,15 +451,8 @@ export default function FooterAdmin() {
                           className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium"
                         >
                           <Edit size={16} />
-                          تعديل
-                        </button>{/*
-                        <button
-                          onClick={() => deleteItem(itemId)}
-                          className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium"
-                        >
-                          <Trash2 size={16} />
-                          حذف
-                        </button> */}
+                          Edit
+                        </button>
                       </div>
                     </div>
                   </div>

@@ -16,7 +16,7 @@ export default function NavbarAdmin() {
   const [expandedObjects, setExpandedObjects] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
 
-  // الحقول المخفية تماماً
+  // Hidden fields
   const hiddenFields = [
     'navbar.ar.logo.position',
     'navbar.ar.logo.width', 
@@ -54,13 +54,13 @@ export default function NavbarAdmin() {
       const response = await fetch(`${API_BASE_URL}?collection=navbar`);
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`فشل في جلب البيانات: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to fetch data: ${response.status} - ${errorText}`);
       }
       const result = await response.json();
       setData(result);
-      showMessage('تم تحديث بيانات Navbar بنجاح');
+      showMessage('Navbar data updated successfully');
     } catch (error) {
-      showMessage('خطأ في جلب بيانات Navbar: ' + error.message, 'error');
+      showMessage('Error fetching navbar data: ' + error.message, 'error');
     }
     setLoading(false);
   };
@@ -75,16 +75,16 @@ export default function NavbarAdmin() {
       });
       
       if (response.ok) {
-        showMessage('✓ تم إضافة العنصر بنجاح');
+        showMessage('✓ Item added successfully');
         setShowAddForm(false);
         setNewItem({});
         fetchData();
       } else {
         const errorText = await response.text();
-        throw new Error(`فشل في إضافة العنصر: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to add item: ${response.status} - ${errorText}`);
       }
     } catch (error) {
-      showMessage('خطأ في إضافة العنصر: ' + error.message, 'error');
+      showMessage('Error adding item: ' + error.message, 'error');
     }
     setLoading(false);
   };
@@ -99,21 +99,21 @@ export default function NavbarAdmin() {
       });
       
       if (response.ok) {
-        showMessage('✓ تم تحديث العنصر بنجاح');
+        showMessage('✓ Item updated successfully');
         setEditingItem(null);
         fetchData();
       } else {
         const errorText = await response.text();
-        throw new Error(`فشل في تحديث العنصر: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to update item: ${response.status} - ${errorText}`);
       }
     } catch (error) {
-      showMessage('خطأ في تحديث العنصر: ' + error.message, 'error');
+      showMessage('Error updating item: ' + error.message, 'error');
     }
     setLoading(false);
   };
 
   const deleteItem = async (id) => {
-    if (!confirm('⚠️ هل أنت متأكد من حذف هذا العنصر؟')) return;
+    if (!confirm('⚠️ Are you sure you want to delete this item?')) return;
     
     setLoading(true);
     try {
@@ -122,14 +122,14 @@ export default function NavbarAdmin() {
       });
       
       if (response.ok) {
-        showMessage('✓ تم حذف العنصر بنجاح');
+        showMessage('✓ Item deleted successfully');
         fetchData();
       } else {
         const errorText = await response.text();
-        throw new Error(`فشل في حذف العنصر: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to delete item: ${response.status} - ${errorText}`);
       }
     } catch (error) {
-      showMessage('خطأ في حذف العنصر: ' + error.message, 'error');
+      showMessage('Error deleting item: ' + error.message, 'error');
     }
     setLoading(false);
   };
@@ -154,23 +154,23 @@ export default function NavbarAdmin() {
 
   const renderFieldLabel = (field) => {
     const labels = {
-      title: 'العنوان',
-      name: 'الاسم',
-      link: 'الرابط',
-      text: 'النص',
-      items: 'العناصر',
-      logo: 'الشعار',
-      icon: 'الأيقونة',
-      name_en: 'الاسم بالإنجليزية',
-      title_en: 'العنوان بالإنجليزية',
-      image_url: 'رابط الصورة',
-      alt_text: 'نص بديل',
-      id: 'المعرف',
-      active: 'مفعل',
-      menu_items: 'عناصر القائمة',
-      navbar: 'شريط التنقل',
-      ar: 'العربية',
-      en: 'الإنجليزية'
+      title: 'Title',
+      name: 'Name',
+      link: 'Link',
+      text: 'Text',
+      items: 'Items',
+      logo: 'Logo',
+      icon: 'Icon',
+      name_en: 'English Name',
+      title_en: 'English Title',
+      image_url: 'Image URL',
+      alt_text: 'Alt Text',
+      id: 'ID',
+      active: 'Active',
+      menu_items: 'Menu Items',
+      navbar: 'Navbar',
+      ar: 'Arabic',
+      en: 'English'
     };
     return labels[field] || field;
   };
@@ -222,7 +222,7 @@ export default function NavbarAdmin() {
   };
 
   const renderField = (field, value, currentData, isEditing, path = field) => {
-    // إخفاء الحقول المحددة
+    // Hide specified fields
     if (hiddenFields.includes(path)) return null;
 
     const currentValue = getNestedValue(currentData, path);
@@ -237,7 +237,7 @@ export default function NavbarAdmin() {
               <Layers size={16} />
               {renderFieldLabel(field)}
               <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs">
-                {(currentValue || []).length} عنصر
+                {(currentValue || []).length} items
               </span>
             </label>
             <button
@@ -282,7 +282,7 @@ export default function NavbarAdmin() {
             <label className="flex items-center gap-2 text-sm font-semibold text-purple-900">
               <Layers size={16} />
               {renderFieldLabel(field)}
-              <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs">كائن</span>
+              <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs">Object</span>
             </label>
             <button
               type="button"
@@ -316,11 +316,11 @@ export default function NavbarAdmin() {
   };
 
   const renderView = (value, path = '') => {
-    // إخفاء الحقول المحددة
+    // Hide specified fields
     if (hiddenFields.includes(path)) return null;
     
     if (Array.isArray(value)) {
-      return <span className="text-purple-700">📋 {value.length} عنصر</span>;
+      return <span className="text-purple-700">📋 {value.length} items</span>;
     } else if (typeof value === 'object' && value !== null) {
       return (
         <div className="ml-4 space-y-2 border-l-4 border-blue-300 pl-4">
@@ -368,7 +368,7 @@ export default function NavbarAdmin() {
             disabled={loading}
           >
             {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />}
-            {isEditing ? 'حفظ التعديلات' : 'إضافة العنصر'}
+            {isEditing ? 'Save Changes' : 'Add Item'}
           </button>
           <button
             onClick={() => {
@@ -379,7 +379,7 @@ export default function NavbarAdmin() {
             className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-lg font-medium"
           >
             <X size={18} />
-            إلغاء
+            Cancel
           </button>
         </div>
       </div>
@@ -392,12 +392,12 @@ export default function NavbarAdmin() {
     : items;
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100" dir="rtl">
+    <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100">
       <div className="p-6 border-b-2 border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold flex items-center gap-3 text-blue-900">
             <Navigation size={28} />
-            Navbar
+            Navbar Management
           </h2>
           <div className="flex gap-3">
             <button
@@ -406,7 +406,7 @@ export default function NavbarAdmin() {
               disabled={loading}
             >
               <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-              تحديث
+              Refresh
             </button>
             <button
               onClick={() => {
@@ -417,7 +417,7 @@ export default function NavbarAdmin() {
               className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-lg font-medium"
             >
               <Plus size={18} />
-              إضافة جديد
+              Add New
             </button>
           </div>
         </div>
@@ -442,7 +442,7 @@ export default function NavbarAdmin() {
         {loading ? (
           <div className="text-center py-16">
             <Loader className="animate-spin mx-auto mb-6 text-blue-600" size={48} />
-            <p className="text-gray-600 text-xl">جاري التحميل...</p>
+            <p className="text-gray-600 text-xl">Loading...</p>
           </div>
         ) : (
           <>
@@ -450,7 +450,7 @@ export default function NavbarAdmin() {
               <div className="mb-8 bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-300 rounded-2xl p-6">
                 <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-green-900">
                   <Plus size={28} />
-                  إضافة عنصر جديد
+                  Add New Item
                 </h3>
                 {renderForm(items[0] || {}, false)}
               </div>
@@ -466,7 +466,7 @@ export default function NavbarAdmin() {
                     <div key={itemId} className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-l-8 border-blue-500">
                       <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-blue-900">
                         <Edit size={24} />
-                        تعديل العنصر #{index + 1}
+                        Edit Item #{index + 1}
                       </h3>
                       {renderForm(item, true)}
                     </div>
@@ -500,7 +500,7 @@ export default function NavbarAdmin() {
                           className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium"
                         >
                           <Edit size={16} />
-                          تعديل
+                          Edit
                         </button>
                       </div>
                     </div>

@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { Database, Settings, Menu, Navigation, Info, BookOpen, ChevronDown, ChevronUp, Image, Upload, Link2, CheckCircle, AlertCircle, Phone, Users, Edit, Save, X } from 'lucide-react';
 
-// استيراد المكونات الحقيقية
+// Import real components
 import NavbarAdmin from './components/navbar';
 import FooterAdmin from './components/footer';
 import MenuAdmin from './components/menu';
 
-// مكون إدارة الواتساب (جديد)
+// WhatsApp Management Component
 function WhatsAppAdmin() {
   const [whatsappData, setWhatsappData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -52,15 +52,15 @@ function WhatsAppAdmin() {
       });
       
       if (response.ok) {
-        setMessage('✅ تم حفظ رقم الواتساب بنجاح!');
+        setMessage('✅ WhatsApp number saved successfully!');
         setWhatsappData({ ...whatsappData, whatsApp: newPhone });
         setIsEditing(false);
         setTimeout(() => setMessage(''), 3000);
       } else {
-        setMessage('❌ حدث خطأ أثناء الحفظ');
+        setMessage('❌ Error occurred while saving');
       }
     } catch (error) {
-      setMessage('❌ حدث خطأ أثناء الحفظ');
+      setMessage('❌ Error occurred while saving');
     }
     setSaving(false);
   };
@@ -68,7 +68,7 @@ function WhatsAppAdmin() {
   if (loading) {
     return (
       <div className="bg-white rounded-2xl shadow-2xl p-8 border-2" style={{ borderColor: '#DAA520' }}>
-        <p className="text-center" style={{ color: '#8B4513' }}>جاري التحميل...</p>
+        <p className="text-center" style={{ color: '#8B4513' }}>Loading...</p>
       </div>
     );
   }
@@ -78,7 +78,7 @@ function WhatsAppAdmin() {
       <div className="flex items-center justify-between mb-6 pb-4 border-b-2" style={{ borderColor: '#CD853F' }}>
         <h2 className="text-2xl font-bold flex items-center gap-3" style={{ color: '#8B4513' }}>
           <Phone size={28} style={{ color: '#DAA520' }} />
-          إدارة رقم الواتساب
+          WhatsApp Number Management
         </h2>
       </div>
 
@@ -91,7 +91,7 @@ function WhatsAppAdmin() {
 
         <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2" style={{ borderColor: '#DAA520' }}>
           <label className="block text-lg font-bold mb-3" style={{ color: '#8B4513' }}>
-            رقم الواتساب الحالي:
+            Current WhatsApp Number:
           </label>
           
           {!isEditing ? (
@@ -99,7 +99,7 @@ function WhatsAppAdmin() {
               <div className="flex items-center gap-3">
                 <Phone size={24} style={{ color: '#CD853F' }} />
                 <span className="text-2xl font-bold" style={{ color: '#8B4513' }}>
-                  {whatsappData?.whatsApp || 'لا يوجد رقم'}
+                  {whatsappData?.whatsApp || 'No number available'}
                 </span>
               </div>
               <button
@@ -108,7 +108,7 @@ function WhatsAppAdmin() {
                 style={{ background: 'linear-gradient(to right, #DAA520, #CD853F)' }}
               >
                 <Edit size={20} />
-                تعديل
+                Edit
               </button>
             </div>
           ) : (
@@ -129,7 +129,7 @@ function WhatsAppAdmin() {
                   style={{ background: 'linear-gradient(to right, #8B4513, #A0522D)' }}
                 >
                   <Save size={20} />
-                  {saving ? 'جاري الحفظ...' : 'حفظ'}
+                  {saving ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   onClick={() => {
@@ -139,7 +139,7 @@ function WhatsAppAdmin() {
                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-gray-500 text-white font-bold hover:scale-105 transition-all"
                 >
                   <X size={20} />
-                  إلغاء
+                  Cancel
                 </button>
               </div>
             </div>
@@ -150,7 +150,7 @@ function WhatsAppAdmin() {
           <p className="text-sm flex items-start gap-2" style={{ color: '#8B4513' }}>
             <Info size={18} className="mt-1" />
             <span>
-              <strong>ملاحظة:</strong> تأكد من كتابة رقم الواتساب بصيغة دولية صحيحة (مثال: +2001201061216)
+              <strong>Note:</strong> Make sure to write the WhatsApp number in correct international format (example: +2001201061216)
             </span>
           </p>
         </div>
@@ -159,7 +159,7 @@ function WhatsAppAdmin() {
   );
 }
 
-// مكون عرض العملاء (جديد)
+// Customers Display Component
 function CustomersAdmin() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -189,7 +189,7 @@ function CustomersAdmin() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ar-EG', {
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -201,7 +201,7 @@ function CustomersAdmin() {
   if (loading) {
     return (
       <div className="bg-white rounded-2xl shadow-2xl p-8 border-2" style={{ borderColor: '#DAA520' }}>
-        <p className="text-center" style={{ color: '#8B4513' }}>جاري التحميل...</p>
+        <p className="text-center" style={{ color: '#8B4513' }}>Loading...</p>
       </div>
     );
   }
@@ -211,14 +211,14 @@ function CustomersAdmin() {
       <div className="flex items-center justify-between mb-6 pb-4 border-b-2" style={{ borderColor: '#CD853F' }}>
         <h2 className="text-2xl font-bold flex items-center gap-3" style={{ color: '#8B4513' }}>
           <Users size={28} style={{ color: '#DAA520' }} />
-          بيانات العملاء ({customers.length})
+          Customer Data ({customers.length})
         </h2>
       </div>
 
       <div className="mb-6">
         <input
           type="text"
-          placeholder="🔍 ابحث بالاسم، الهاتف، أو العنوان..."
+          placeholder="🔍 Search by name, phone, or address..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-3 border-2 rounded-lg text-lg"
@@ -230,7 +230,7 @@ function CustomersAdmin() {
         <div className="text-center py-12">
           <Users size={64} className="mx-auto mb-4 opacity-30" style={{ color: '#DAA520' }} />
           <p className="text-xl" style={{ color: '#8B4513' }}>
-            {searchTerm ? 'لا توجد نتائج للبحث' : 'لا يوجد عملاء مسجلين'}
+            {searchTerm ? 'No search results found' : 'No registered customers'}
           </p>
         </div>
       ) : (
@@ -256,26 +256,27 @@ function CustomersAdmin() {
                   </div>
                 </div>
               </div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
-                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>رقم الهاتف:</p>
-                  <p className="text-lg" style={{ direction: 'ltr', textAlign: 'right' }}>{customer.phone}</p>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>Phone Number:</p>
+                  <p className="text-lg" style={{ direction: 'ltr', textAlign: 'left' }}>{customer.phone}</p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
-                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>طريقة الدفع:</p>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>Payment Method:</p>
                   <p className="text-lg">
-                    {customer.paymentMethod === 'cash' ? '💵 كاش' : '💳 بطاقة ائتمانية'}
+                    {customer.paymentMethod === 'cash' ? '💵 Cash' : '💳 Credit Card'}
                   </p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
-                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>موقع العميل:</p>
-                  <p className="text-lg">{customer.location || 'غير محدد'}</p>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>Customer Location:</p>
+                  <p className="text-lg">{customer.location || 'Not specified'}</p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 border" style={{ borderColor: '#CD853F' }}>
-                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>العنوان التفصيلي:</p>
+                  <p className="text-sm font-bold mb-1" style={{ color: '#8B4513' }}>Detailed Address:</p>
                   <p className="text-lg">{customer.address}</p>
                 </div>
               </div>
@@ -300,7 +301,7 @@ export default function RestaurantAdminDashboard() {
       setIsAuthenticated(true);
       setError('');
     } else {
-      setError('كلمة السر غير صحيحة');
+      setError('Incorrect password');
       setPassword('');
     }
   };
@@ -314,30 +315,30 @@ export default function RestaurantAdminDashboard() {
           <div className="text-center mb-8">
             <Database className="mx-auto mb-4 animate-pulse" size={64} style={{ color: '#DAA520' }} />
             <h1 className="text-3xl font-bold mb-2" style={{ color: '#8B4513' }}>
-              لوحة تحكم لمطبخ أم خاطر
+              Um Khater Kitchen Control Panel
             </h1>
-            <p className="text-gray-600">الرجاء إدخال كلمة السر للدخول</p>
+            <p className="text-gray-600">Please enter password to login</p>
           </div>
           
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-right mb-2 font-semibold" style={{ color: '#8B4513' }}>
-                كلمة السر
+              <label className="block text-left mb-2 font-semibold" style={{ color: '#8B4513' }}>
+                Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border-2 rounded-xl text-right focus:outline-none focus:ring-2"
+                className="w-full px-4 py-3 border-2 rounded-xl text-left focus:outline-none focus:ring-2"
                 style={{ 
                   borderColor: error ? '#ef4444' : '#DAA520',
                   focusRing: '#CD853F'
                 }}
-                placeholder="أدخل كلمة السر"
+                placeholder="Enter password"
                 dir="ltr"
               />
               {error && (
-                <p className="text-red-500 text-sm mt-2 text-right">{error}</p>
+                <p className="text-red-500 text-sm mt-2 text-left">{error}</p>
               )}
             </div>
             
@@ -348,7 +349,7 @@ export default function RestaurantAdminDashboard() {
                 background: 'linear-gradient(to right, #DAA520, #CD853F)'
               }}
             >
-              دخول
+              Login
             </button>
           </form>
 
@@ -371,7 +372,7 @@ export default function RestaurantAdminDashboard() {
     { id: 'navbar', name: 'Navbar', icon: Navigation, component: NavbarAdmin },
     { id: 'footer', name: 'Footer', icon: Info, component: FooterAdmin },
     { id: 'whatsapp', name: 'WhatsApp', icon: Phone, component: WhatsAppAdmin },
-    { id: 'customers', name: 'العملاء', icon: Users, component: CustomersAdmin }
+    { id: 'customers', name: 'Customers', icon: Users, component: CustomersAdmin }
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || MenuAdmin;
@@ -379,184 +380,184 @@ export default function RestaurantAdminDashboard() {
   const userGuides = [
     {
       id: 'whatsapp',
-      title: '📱 دليل إدارة رقم الواتساب',
+      title: '📱 WhatsApp Number Management Guide',
       icon: Phone,
       color: 'blue',
       steps: [
         {
-          title: '1️⃣ كيفية تعديل رقم الواتساب',
+          title: '1️⃣ How to Edit WhatsApp Number',
           content: [
-            '✅ اذهب إلى تبويب "WhatsApp" من القائمة الجانبية',
-            '✅ اضغط على زر "تعديل"',
-            '✅ أدخل رقم الواتساب الجديد بصيغة دولية (+20xxxxxxxxxx)',
-            '✅ اضغط على "حفظ" لتأكيد التعديل',
-            '⚠️ تأكد من كتابة الرقم بصيغة صحيحة'
+            '✅ Go to "WhatsApp" tab from sidebar',
+            '✅ Click on "Edit" button',
+            '✅ Enter new WhatsApp number in international format (+20xxxxxxxxxx)',
+            '✅ Click "Save" to confirm changes',
+            '⚠️ Make sure to write the number in correct format'
           ]
         }
       ]
     },
     {
       id: 'customers',
-      title: '👥 دليل عرض بيانات العملاء',
+      title: '👥 Customer Data Display Guide',
       icon: Users,
       color: 'green',
       steps: [
         {
-          title: '1️⃣ كيفية عرض العملاء',
+          title: '1️⃣ How to View Customers',
           content: [
-            '✅ اذهب إلى تبويب "العملاء" من القائمة الجانبية',
-            '✅ ستظهر قائمة بجميع العملاء المسجلين',
-            '✅ يمكنك البحث عن عميل باستخدام الاسم، الهاتف، أو العنوان',
-            '✅ كل بطاقة عميل تحتوي على: الاسم، الهاتف، العنوان، طريقة الدفع، تاريخ التسجيل'
+            '✅ Go to "Customers" tab from sidebar',
+            '✅ A list of all registered customers will appear',
+            '✅ You can search for a customer using name, phone, or address',
+            '✅ Each customer card contains: name, phone, address, payment method, registration date'
           ]
         }
       ]
     },
     {
       id: 'navbar',
-      title: '📌 دليل التعديل على Navbar (شريط التنقل)',
+      title: '📌 Navbar Editing Guide',
       icon: Navigation,
       color: 'blue',
       steps: [
         {
-          title: '1️⃣ تعديل الشعار (Logo)',
+          title: '1️⃣ Edit Logo',
           content: [
-            '✅ اضغط على زر "تعديل" في بطاقة Navbar',
-            '✅ ابحث عن حقل "logo" → "image_url"',
-            '✅ الصق رابط الصورة الجديدة (شوف خطوات رفع الصور أسفل)',
-            '✅ يمكنك تعديل اسم المطبخ في حقل "name"',
-            '⚠️ تأكد من رفع الصورة أولاً على GitHub (شوف القسم الأصفر أسفل)'
+            '✅ Click "Edit" button in Navbar card',
+            '✅ Find "logo" → "image_url" field',
+            '✅ Paste new image link (see image upload steps below)',
+            '✅ You can edit kitchen name in "name" field',
+            '⚠️ Make sure to upload image first on GitHub (see yellow section below)'
           ]
         },
         {
-          title: '2️⃣ تعديل عناصر القائمة',
+          title: '2️⃣ Edit Menu Items',
           content: [
-            '✅ افتح قسم "menu_items"',
-            '✅ كل عنصر له: عنوان (title)، رابط (link)',
-            '✅ لتعديل اسم القسم: غيّر حقل "title"',
-            '✅ لتغيير الرابط: عدّل حقل "link"',
-            '❌ لا تحذف حقل "id" أبداً!'
+            '✅ Open "menu_items" section',
+            '✅ Each item has: title, link',
+            '✅ To edit section name: change "title" field',
+            '✅ To change link: edit "link" field',
+            '❌ Never delete "id" field!'
           ]
         },
         {
-          title: '3️⃣ النسخة العربية والإنجليزية',
+          title: '3️⃣ Arabic and English Versions',
           content: [
-            '🇸🇦 قسم "ar" للنسخة العربية',
-            '🇬🇧 قسم "en" للنسخة الإنجليزية',
-            '⚠️ تأكد من تعديل النسختين معاً',
-            '✅ احفظ التعديلات بالضغط على "حفظ التعديلات"'
+            '🇸🇦 "ar" section for Arabic version',
+            '🇬🇧 "en" section for English version',
+            '⚠️ Make sure to edit both versions together',
+            '✅ Save changes by clicking "Save Changes"'
           ]
         }
       ]
     },
     {
       id: 'menu',
-      title: '🍽️ دليل التعديل على Menu (قائمة الطعام)',
+      title: '🍽️ Menu Editing Guide',
       icon: Menu,
       color: 'green',
       steps: [
         {
-          title: '1️⃣ إضافة طبق جديد',
+          title: '1️⃣ Add New Dish',
           content: [
-            '✅ اختر الفئة المطلوبة من الأزرار العلوية (مثلاً: المحاشي، الحلويات)',
-            '✅ اضغط على زر "إضافة طبق جديد"',
-            '✅ املأ البيانات بالعربي: الاسم، السعر، الوصف',
-            '✅ املأ البيانات بالإنجليزي: Name, Price, Description',
-            '✅ أضف رابط الصورة الرئيسية (image)',
-            '✅ أضف رابط صورة التمرير (hoverImage) - اختياري',
-            '✅ اضغط "إضافة الطبق"'
+            '✅ Choose required category from top buttons (e.g: Stuffed, Desserts)',
+            '✅ Click "Add New Dish" button',
+            '✅ Fill Arabic data: Name, Price, Description',
+            '✅ Fill English data: Name, Price, Description',
+            '✅ Add main image link (image)',
+            '✅ Add hover image link (hoverImage) - optional',
+            '✅ Click "Add Dish"'
           ]
         },
         {
-          title: '2️⃣ تعديل طبق موجود',
+          title: '2️⃣ Edit Existing Dish',
           content: [
-            '✅ ابحث عن الطبق في القائمة',
-            '✅ اضغط على زر "تعديل"',
-            '✅ عدّل البيانات المطلوبة',
-            '✅ لا تنسى تعديل النسخة العربية والإنجليزية',
-            '✅ اضغط "حفظ التعديلات"'
+            '✅ Find dish in list',
+            '✅ Click "Edit" button',
+            '✅ Edit required data',
+            '✅ Don\'t forget to edit Arabic and English versions',
+            '✅ Click "Save Changes"'
           ]
         },
         {
-          title: '3️⃣ حذف طبق',
+          title: '3️⃣ Delete Dish',
           content: [
-            '⚠️ احذر! الحذف نهائي',
-            '✅ اضغط على زر "حذف" بجانب الطبق',
-            '✅ أكد الحذف من النافذة المنبثقة',
-            '❌ لا يمكن التراجع عن الحذف'
+            '⚠️ Warning! Deletion is permanent',
+            '✅ Click "Delete" button next to dish',
+            '✅ Confirm deletion from popup window',
+            '❌ Cannot undo deletion'
           ]
         },
         {
-          title: '4️⃣ تعديل معلومات المطبخ',
+          title: '4️⃣ Edit Kitchen Information',
           content: [
-            '✅ اضغط على تبويب "معلومات المطبخ"',
-            '✅ عدّل: الاسم، الشعار، الوصف، الهاتف، الموقع',
-            '✅ عدّل النسخة العربية والإنجليزية',
-            '✅ اضغط "حفظ معلومات المطبخ"'
+            '✅ Click on "Kitchen Information" tab',
+            '✅ Edit: Name, Logo, Description, Phone, Location',
+            '✅ Edit Arabic and English versions',
+            '✅ Click "Save Kitchen Information"'
           ]
         },
         {
-          title: '5️⃣ تعديل Hero Slider (السلايدر الرئيسي)',
+          title: '5️⃣ Edit Hero Slider',
           content: [
-            '✅ اضغط على تبويب "Hero Slider"',
-            '✅ كل سلايد له: صورة، عنوان، وصف، سعر، عرض',
-            '✅ عدّل البيانات العربية والإنجليزية لكل سلايد',
-            '✅ اضغط "حفظ Hero Slider"'
+            '✅ Click on "Hero Slider" tab',
+            '✅ Each slide has: image, title, description, price, offer',
+            '✅ Edit Arabic and English data for each slide',
+            '✅ Click "Save Hero Slider"'
           ]
         }
       ]
     },
     {
       id: 'footer',
-      title: '🔽 دليل التعديل على Footer (الفوتر)',
+      title: '🔽 Footer Editing Guide',
       icon: Info,
       color: 'purple',
       steps: [
         {
-          title: '1️⃣ تعديل قسم "عن المطبخ"',
+          title: '1️⃣ Edit "About Kitchen" Section',
           content: [
-            '✅ اضغط على زر "تعديل"',
-            '✅ ابحث عن قسم "about"',
-            '✅ عدّل العنوان (title) والوصف (description)',
-            '✅ عدّل النسخة العربية (ar) والإنجليزية (en)',
-            '✅ اضغط "حفظ التعديلات"'
+            '✅ Click "Edit" button',
+            '✅ Find "about" section',
+            '✅ Edit title and description',
+            '✅ Edit Arabic (ar) and English (en) versions',
+            '✅ Click "Save Changes"'
           ]
         },
         {
-          title: '2️⃣ تعديل الروابط السريعة',
+          title: '2️⃣ Edit Quick Links',
           content: [
-            '✅ افتح قسم "quickLinks"',
-            '✅ كل رابط له: اسم (name) ورابط (url)',
-            '✅ لتعديل اسم الرابط: غيّر حقل "name"',
-            '✅ لتغيير العنوان: عدّل حقل "url"',
-            '⚠️ تأكد من صحة الروابط قبل الحفظ'
+            '✅ Open "quickLinks" section',
+            '✅ Each link has: name and url',
+            '✅ To edit link name: change "name" field',
+            '✅ To change address: edit "url" field',
+            '⚠️ Make sure links are correct before saving'
           ]
         },
         {
-          title: '3️⃣ تعديل معلومات التواصل',
+          title: '3️⃣ Edit Contact Information',
           content: [
-            '✅ افتح قسم "contact"',
-            '✅ عدّل: الهاتف (phone)، البريد (email)، الموقع (location)',
-            '✅ عدّل ساعات العمل (hours)',
-            '✅ تأكد من كتابة الأرقام بشكل صحيح'
+            '✅ Open "contact" section',
+            '✅ Edit: phone, email, location',
+            '✅ Edit working hours',
+            '✅ Make sure numbers are written correctly'
           ]
         },
         {
-          title: '4️⃣ تعديل روابط التواصل الاجتماعي',
+          title: '4️⃣ Edit Social Media Links',
           content: [
-            '✅ افتح قسم "social" → "platforms"',
-            '✅ كل منصة لها: اسم، أيقونة، رابط',
-            '✅ عدّل حقل "url" لتغيير الرابط',
-            '⚠️ تأكد من صحة روابط الحسابات'
+            '✅ Open "social" → "platforms" section',
+            '✅ Each platform has: name, icon, link',
+            '✅ Edit "url" field to change link',
+            '⚠️ Make sure account links are correct'
           ]
         },
         {
-          title: '5️⃣ تعديل حقوق النشر',
+          title: '5️⃣ Edit Copyright',
           content: [
-            '✅ ابحث عن حقل "copyright"',
-            '✅ عدّل النص كما تريد',
-            '✅ عدّل النسخة العربية والإنجليزية',
-            '✅ احفظ التعديلات'
+            '✅ Find "copyright" field',
+            '✅ Edit text as you want',
+            '✅ Edit Arabic and English versions',
+            '✅ Save changes'
           ]
         }
       ]
@@ -564,46 +565,46 @@ export default function RestaurantAdminDashboard() {
   ];
 
   const imageUploadGuide = {
-    title: '📸 خطوات رفع الصور بشكل صحيح',
+    title: '📸 Steps to Upload Images Correctly',
     steps: [
       {
         step: '1',
-        title: 'تصغير حجم الصورة',
+        title: 'Compress Image Size',
         icon: Image,
         color: 'bg-yellow-500',
         details: [
-          '🌐 افتح موقع TinyPNG: https://tinypng.com',
-          '📤 ارفع الصورة على الموقع',
-          '⏳ انتظر حتى ينتهي الضغط',
-          '💾 حمّل الصورة المضغوطة على جهازك',
-          '✅ الصورة الآن جاهزة للرفع!'
+          '🌐 Open TinyPNG website: https://tinypng.com',
+          '📤 Upload image to website',
+          '⏳ Wait until compression finishes',
+          '💾 Download compressed image to your device',
+          '✅ Image is now ready to upload!'
         ]
       },
       {
         step: '2',
-        title: 'رفع الصورة على GitHub',
+        title: 'Upload Image to GitHub',
         icon: Upload,
         color: 'bg-blue-500',
         details: [
-          '🌐 افتح GitHub Repository الخاص بالصور',
-          '📁 اختر المجلد المناسب (مثلاً: menu-images)',
-          '➕ اضغط على "Add file" → "Upload files"',
-          '📤 اسحب الصورة أو اختارها من جهازك',
-          '💬 اكتب رسالة Commit (مثلاً: "Add new dish image")',
-          '✅ اضغط "Commit changes"'
+          '🌐 Open GitHub Repository for images',
+          '📁 Choose appropriate folder (e.g: menu-images)',
+          '➕ Click "Add file" → "Upload files"',
+          '📤 Drag image or select it from your device',
+          '💬 Write Commit message (e.g: "Add new dish image")',
+          '✅ Click "Commit changes"'
         ]
       },
       {
         step: '3',
-        title: 'الحصول على رابط الصورة',
+        title: 'Get Image Link',
         icon: Link2,
         color: 'bg-green-500',
         details: [
-          '👆 اضغط على الصورة في GitHub',
-          '🖱️ اضغط بالزر الأيمن على الصورة',
-          '📋 اختر "Copy image address" أو "نسخ عنوان الصورة"',
-          '✅ الرابط الآن في الحافظة!',
-          '📝 الصق الرابط في حقل "image_url" في لوحة التحكم'
+          '👆 Click on image in GitHub',
+          '🖱️ Right-click on image',
+          '📋 Choose "Copy image address"',
+          '✅ Link is now in clipboard!',
+          '📝 Paste link in "image_url" field in control panel'
         ]
       }
     ]
@@ -613,32 +614,32 @@ export default function RestaurantAdminDashboard() {
     {
       type: 'success',
       icon: CheckCircle,
-      title: 'نصائح مهمة ✅',
+      title: 'Important Tips ✅',
       items: [
-        'احفظ نسخة احتياطية قبل التعديل',
-        'عدّل النسخة العربية والإنجليزية معاً',
-        'تأكد من صحة الروابط قبل الحفظ',
-        'استخدم صور بجودة عالية وحجم صغير',
-        'جرّب التعديلات في بيئة الاختبار أولاً'
+        'Save backup before editing',
+        'Edit Arabic and English versions together',
+        'Make sure links are correct before saving',
+        'Use high quality images with small size',
+        'Test edits in testing environment first'
       ]
     },
     {
       type: 'warning',
       icon: AlertCircle,
-      title: 'تحذيرات مهمة ⚠️',
+      title: 'Important Warnings ⚠️',
       items: [
-        'لا تحذف حقول "id" أو "_id" أبداً!',
-        'لا تغيّر أسماء الحقول (مثل: name, title, link)',
-        'تأكد من رفع الصور قبل إضافة روابطها',
-        'الحذف نهائي ولا يمكن التراجع عنه',
-        'اضغط "حفظ" بعد كل تعديل'
+        'Never delete "id" or "_id" fields!',
+        'Don\'t change field names (like: name, title, link)',
+        'Make sure to upload images before adding their links',
+        'Deletion is permanent and cannot be undone',
+        'Click "Save" after each edit'
       ]
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
-      {/* استيراد فونت الإمضاء */}
+    <div className="min-h-screen bg-white" dir="ltr">
+      {/* Import signature font */}
       <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Allura&family=Dancing+Script:wght@300;400&display=swap" rel="stylesheet" />
       {/* Header */}
       <div className="shadow-2xl border-b-4" style={{ 
@@ -649,7 +650,7 @@ export default function RestaurantAdminDashboard() {
           <div className="flex justify-between items-center py-6">
             <h1 className="text-3xl font-bold text-white flex items-center gap-3 drop-shadow-lg">
               <Database className="animate-pulse" size={36} />
-              لوحة تحكم لمطبخ أم خاطر
+              Um Khater Kitchen Control Panel
             </h1>
             <div className="text-white text-right flex flex-col items-center">
               <p className="text-xs font-semibold opacity-80">Developed by</p>
@@ -673,7 +674,7 @@ export default function RestaurantAdminDashboard() {
                 borderColor: '#CD853F'
               }}>
                 <Settings size={24} style={{ color: '#DAA520' }} />
-                أقسام الموقع
+                Website Sections
               </h2>
               <div className="space-y-3">
                 {tabs.map(tab => {
@@ -682,7 +683,7 @@ export default function RestaurantAdminDashboard() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-5 py-4 rounded-xl transition-all text-right font-medium shadow-md hover:shadow-lg ${
+                      className={`w-full flex items-center gap-3 px-5 py-4 rounded-xl transition-all text-left font-medium shadow-md hover:shadow-lg ${
                         activeTab === tab.id
                           ? 'scale-105 text-white border-2'
                           : 'hover:scale-105 border-2'
@@ -703,17 +704,17 @@ export default function RestaurantAdminDashboard() {
                 })}
               </div>
 
-              {/* معلومات إضافية */}
+              {/* Additional Information */}
               <div className="mt-8 p-4 rounded-xl border-2" style={{
                 background: 'linear-gradient(to right, #FFF9E6, #FFF5CC)',
                 borderColor: '#DAA520'
               }}>
                 <h3 className="font-bold mb-2 flex items-center gap-2" style={{ color: '#8B4513' }}>
                   <Info size={18} />
-                  معلومات
+                  Information
                 </h3>
                 <p className="text-sm" style={{ color: '#666' }}>
-                  استخدم هذه اللوحة لإدارة محتوى الموقع بسهولة
+                  Use this panel to manage website content easily
                 </p>
                 <div className="mt-4 pt-3 border-t" style={{ borderColor: '#DAA520' }}>
                   <p className="text-xs text-center font-semibold opacity-70" style={{ color: '#8B4513' }}>Developed by</p>
@@ -736,11 +737,11 @@ export default function RestaurantAdminDashboard() {
       </div>
 
       {/* ============================================ */}
-      {/* دليل المستخدم الشامل */}
+      {/* Complete User Guide */}
       {/* ============================================ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         
-        {/* عنوان الدليل */}
+        {/* Guide Title */}
         <div className="rounded-2xl shadow-2xl p-8 mb-8 border-4 relative overflow-hidden" style={{
           background: 'linear-gradient(to right, #DAA520, #CD853F)',
           borderColor: '#8B4513'
@@ -749,8 +750,8 @@ export default function RestaurantAdminDashboard() {
             <div className="flex items-center gap-4">
               <BookOpen size={48} className="animate-bounce" />
               <div>
-                <h2 className="text-3xl font-bold mb-2">📚 دليل المستخدم الشامل</h2>
-                <p className="text-lg opacity-90">تعلم كيفية التعديل على كل جزء من الموقع بسهولة</p>
+                <h2 className="text-3xl font-bold mb-2">📚 Complete User Guide</h2>
+                <p className="text-lg opacity-90">Learn how to edit every part of the website easily</p>
               </div>
             </div>
             <div className="text-right hidden md:flex md:flex-col md:items-center">
@@ -762,7 +763,7 @@ export default function RestaurantAdminDashboard() {
               </p>
             </div>
           </div>
-          {/* Watermark في الخلفية - علامة مائية */}
+          {/* Watermark in background */}
           <div className="absolute bottom-4 right-4 text-white text-5xl font-light pointer-events-none" style={{
             fontFamily: "'Great Vibes', 'Allura', cursive",
             opacity: 0.08
@@ -771,7 +772,7 @@ export default function RestaurantAdminDashboard() {
           </div>
         </div>
 
-        {/* خطوات رفع الصور - قسم مميز */}
+        {/* Image Upload Steps - Featured Section */}
         <div className="rounded-2xl shadow-2xl p-8 mb-8 border-4" style={{
           background: 'linear-gradient(to bottom right, #FFF9E6, #FFF0B3)',
           borderColor: '#DAA520'
@@ -814,12 +815,12 @@ export default function RestaurantAdminDashboard() {
           }}>
             <p className="text-sm font-medium flex items-center gap-2" style={{ color: '#8B4513' }}>
               <AlertCircle size={20} />
-              <strong>مهم جداً:</strong> يجب رفع الصور أولاً على GitHub والحصول على الرابط قبل إضافته في لوحة التحكم!
+              <strong>Very Important:</strong> You must upload images first on GitHub and get the link before adding it in the control panel!
             </p>
           </div>
         </div>
 
-        {/* أدلة المكونات */}
+        {/* Component Guides */}
         <div className="space-y-6">
           {userGuides.map(guide => {
             const GuideIcon = guide.icon;
@@ -876,7 +877,7 @@ export default function RestaurantAdminDashboard() {
           })}
         </div>
 
-        {/* نصائح وتحذيرات */}
+        {/* Tips and Warnings */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           {importantNotes.map((note, index) => {
             const NoteIcon = note.icon;
@@ -909,29 +910,29 @@ export default function RestaurantAdminDashboard() {
           })}
         </div>
 
-        {/* معلومات الدعم */}
+        {/* Support Information */}
         <div className="rounded-2xl shadow-2xl p-8 mt-8 border-4 relative overflow-hidden" style={{
           background: 'linear-gradient(to right, #8B4513, #A0522D)',
           borderColor: '#654321'
         }}>
           <div className="text-white text-center relative z-10">
-            <h3 className="text-2xl font-bold mb-3">💡 هل تحتاج مساعدة؟</h3>
+            <h3 className="text-2xl font-bold mb-3">💡 Need Help?</h3>
             <p className="text-lg mb-4 opacity-90">
-              إذا واجهت أي مشكلة أو كنت بحاجة لمساعدة إضافية، لا تتردد في التواصل معنا
+              If you encounter any problem or need additional help, don't hesitate to contact us
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <div className="rounded-lg px-6 py-3" style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
                 backdropFilter: 'blur(10px)'
               }}>
-                <p className="font-bold">📧 البريد الإلكتروني</p>
+                <p className="font-bold">📧 Email</p>
                 <p className="text-sm">hanynan8@gmail.com</p>
               </div>
               <div className="rounded-lg px-6 py-3" style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
                 backdropFilter: 'blur(10px)'
               }}>
-                <p className="font-bold">📱 واتساب</p>
+                <p className="font-bold">📱 WhatsApp</p>
                 <p className="text-sm">+201201061216</p>
               </div>
             </div>
@@ -945,7 +946,7 @@ export default function RestaurantAdminDashboard() {
               <p className="text-xs mt-1 opacity-60 font-medium">Full Stack Developer</p>
             </div>
           </div>
-          {/* Watermark ضخم في الخلفية - علامة مائية */}
+          {/* Huge watermark in background */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <p className="text-9xl font-light" style={{ 
               fontFamily: "'Great Vibes', 'Allura', cursive",
@@ -963,9 +964,9 @@ export default function RestaurantAdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: '#DAA520' }}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-center md:text-right">
-              <h3 className="font-bold mb-1" style={{ color: '#8B4513' }}>لوحة تحكم لمطبخ أم خاطر</h3>
-              <p className="text-sm" style={{ color: '#666' }}>إدارة محتوى الموقع بكل سهولة</p>
+            <div className="text-center md:text-left">
+              <h3 className="font-bold mb-1" style={{ color: '#8B4513' }}>Um Khater Kitchen Control Panel</h3>
+              <p className="text-sm" style={{ color: '#666' }}>Manage website content with ease</p>
             </div>
             <div className="text-center">
               <p className="text-xs font-semibold opacity-70 mb-1" style={{ color: '#8B4513' }}>Developed by</p>
@@ -976,8 +977,8 @@ export default function RestaurantAdminDashboard() {
                 Hany Younan
               </p>
             </div>
-            <div className="text-center md:text-left">
-              <p className="text-sm" style={{ color: '#8B4513' }}>نسخة 2.0</p>
+            <div className="text-center md:text-right">
+              <p className="text-sm" style={{ color: '#8B4513' }}>Version 2.0</p>
             </div>
           </div>
         </div>
