@@ -24,6 +24,7 @@ export default function Home() {
 
   const totalItems = getTotalItems();
 
+  
   useEffect(() => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
@@ -855,8 +856,7 @@ const allItems = data.categories.flatMap(cat =>
           </div>
         )}
       </div>
-
-      {/* Contact Section */}
+{/* Contact Section */}
       <div 
         id='contact' 
         ref={el => categoryRefs.current['contact'] = el}
@@ -874,7 +874,11 @@ const allItems = data.categories.flatMap(cat =>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
               <div 
-                className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105" 
+                onClick={() => {
+                  const cleanPhone = restaurant.phone.replace(/\D/g, '');
+                  window.location.href = `https://wa.me/${cleanPhone}`;
+                }}
+                className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105 cursor-pointer" 
                 style={{ 
                   backgroundColor: colors.background,
                   borderColor: colors.accent
@@ -883,7 +887,7 @@ const allItems = data.categories.flatMap(cat =>
                 <Phone className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
                 <div className="text-center">
                   <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
-                    الهاتف / Phone
+                  Phone
                   </p>
                   <p className="text-base sm:text-lg font-bold" style={{ color: colors.text }}>
                     {restaurant.phone}
@@ -892,7 +896,10 @@ const allItems = data.categories.flatMap(cat =>
               </div>
               
               <div 
-                className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105" 
+                onClick={() => {
+                  window.location.href = "https://www.google.com/maps?q=Um+Khater+Kitchen+Dubai";
+                }}
+                className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 rounded-xl border transition-all duration-300 hover:scale-105 cursor-pointer" 
                 style={{ 
                   backgroundColor: colors.background,
                   borderColor: colors.accent
@@ -901,7 +908,7 @@ const allItems = data.categories.flatMap(cat =>
                 <MapPin className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" strokeWidth={2} style={{ color: colors.secondary }} />
                 <div className="text-center">
                   <p className="text-xs font-medium mb-1 uppercase" style={{ color: colors.secondary }}>
-                    الموقع / Location
+                    Location
                   </p>
                   <p className="text-sm sm:text-base font-bold" style={{ color: colors.text }}>
                     {restaurant.location}

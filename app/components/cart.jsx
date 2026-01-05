@@ -553,33 +553,31 @@ const Cart = ({ language = 'ar' }) => {
         alert('خطأ في تحميل بيانات المستخدم');
         return;
       }
+let message = `*New Order*\n\n`;
+message += `*Customer Information:*\n`;
+message += ` *Name:* ${currentUser.name}\n`;
+message += ` *Phone:* ${currentUser.phone}\n`;
+message += ` *Address:* ${currentUser.address}\n`;
 
-      let message = `*🛒 طلب جديد*\n\n`;
-      message += `*📋 معلومات العميل:*\n`;
-      message += `👤 *الاسم:* ${currentUser.name}\n`;
-      message += `📱 *الهاتف:* ${currentUser.phone}\n`;
-      message += `📍 *العنوان:* ${currentUser.address}\n`;
-      
-      // إضافة الموقع إذا كان متوفراً
-      if (currentUser.location) {
-        message += `🗺️ *الموقع:* ${currentUser.location}\n`;
-      }
-      
-      message += `💳 *طريقة الدفع:* ${currentUser.paymentMethod === 'cash' ? 'كاش عند الاستلام 💵' : 'فيزا 💳'}\n\n`;
-      message += `*🛍️ المنتجات:*\n`;
-      message += `━━━━━━━━━━━━━━━━\n`;
-      
-      cartItems.forEach((item, index) => {
-        const price = extractPrice(item.price);
-        const itemTotal = (price * item.quantity).toFixed(2);
-        message += `${index + 1}. *${item.name}*\n`;
-        message += `   📦 الكمية: ${item.quantity}\n`;
-        message += `   💰 السعر: ${itemTotal} ${item.currency || 'درهم'}\n\n`;
-      });
-      
-      message += `━━━━━━━━━━━━━━━━\n`;
-      message += `💵 *الإجمالي النهائي: ${getTotalPrice().toFixed(2)} ${language === 'ar' ? 'درهم' : 'AED'}*`;
+// Add location if available
+if (currentUser.location) {
+  message += ` *Location:* ${currentUser.location}\n`;
+}
 
+message += `*Payment Method:* ${currentUser.paymentMethod === 'cash' ? 'Cash on Delivery ' : 'Visa Card '}\n\n`;
+message += `*Products:*\n`;
+message += `━━━━━━━━━━━━━━━━\n`;
+
+cartItems.forEach((item, index) => {
+  const price = extractPrice(item.price);
+  const itemTotal = (price * item.quantity).toFixed(2);
+  message += `${index + 1}. *${item.name}*\n`;
+  message += `    Quantity: ${item.quantity}\n`;
+  message += `    Price: ${itemTotal} AED\n\n`;
+});
+
+message += `━━━━━━━━━━━━━━━━\n`;
+message += ` *Total Amount: ${getTotalPrice().toFixed(2)} AED*`;
      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
       
       // استخدام location.href بدلاً من window.open للتوافق مع جميع الأجهزة
