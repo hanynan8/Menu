@@ -153,10 +153,12 @@ export default function Home() {
     text: "#F5DEB3"
   };
 
-  const allItems = data.categories.flatMap(cat => 
-    cat.items.map(item => ({
+const allItems = data.categories.flatMap(cat => 
+    cat.items.map((item, index) => ({
       ...item,
+      uniqueId: item.id && item.id !== 'item_NaN' ? item.id : `${cat.id}_${index}`,
       category: cat.id,
+      categoryId: cat.id,
       categoryName: cat[language].name,
       categoryImage: cat.image
     }))
@@ -675,14 +677,14 @@ export default function Home() {
         {/* المحتوى - المنتجات */}
         <div className="relative container mx-auto px-3 sm:px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-            {filteredItems.map(item => (
-              <div
-                key={item.id}
-                className={`group rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transform hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 border-2 cursor-pointer flex flex-col ${
-                  loadedImages.has(item.id) 
-                    ? 'opacity-100 scale-100' 
-                    : 'opacity-0 scale-95'
-                }`}
+{filteredItems.map(item => (
+  <div
+    key={item.uniqueId}
+    className={`group rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transform hover:-translate-y-2 sm:hover:-translate-y-3 transition-all duration-500 border-2 cursor-pointer flex flex-col ${
+      loadedImages.has(item.uniqueId) 
+        ? 'opacity-100 scale-100' 
+        : 'opacity-0 scale-95'
+    }`}
                 style={{ 
                   backgroundColor: colors.cardBg,
                   borderColor: (hoveredItem === item.id || clickedItem === item.id) ? colors.secondary + '99' : colors.accent + '4D'
