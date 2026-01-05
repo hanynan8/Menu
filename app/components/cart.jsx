@@ -580,8 +580,13 @@ const Cart = ({ language = 'ar' }) => {
       message += `━━━━━━━━━━━━━━━━\n`;
       message += `💵 *الإجمالي النهائي: ${getTotalPrice().toFixed(2)} ${language === 'ar' ? 'درهم' : 'AED'}*`;
 
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
+     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+      
+      // استخدام location.href بدلاً من window.open للتوافق مع جميع الأجهزة
+      window.location.href = whatsappUrl;
+
+      // مسح السلة (سيحدث بعد العودة من الواتساب)
+      await clearCart();
 
       await clearCart();
     } catch (error) {
