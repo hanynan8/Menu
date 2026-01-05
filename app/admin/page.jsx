@@ -35,32 +35,61 @@ function WhatsAppAdmin() {
       setLoading(false);
     }
   };
-
-  const handleSave = async () => {
+const handleSave = async () => {
     setSaving(true);
     setMessage('');
+    
+    console.log('🔍 Attempting to save WhatsApp number...');
+    console.log('📱 New phone:', newPhone);
+    console.log('🆔 Document ID:', whatsappData?._id);
+    
     try {
-      const response = await fetch('/api/data?collection=whatsapp', {
+      // التحقق من صحة رقم الواتساب
+      if (!newPhone || newPhone.trim() === '') {
+        setMessage('❌ Please enter WhatsApp number');
+        setSaving(false);
+        return;
+      }
+
+      if (!whatsappData?._id) {
+        setMessage('❌ No document ID found');
+        setSaving(false);
+        return;
+      }
+
+      // نبعت الـ ID في الـ query string والبيانات في الـ body
+      const updatedData = {
+        ...whatsappData,
+        whatsApp: newPhone.trim()
+      };
+      
+      console.log('📤 Sending payload:', updatedData);
+
+      const response = await fetch(`/api/data?collection=whatsapp&id=${whatsappData._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          _id: whatsappData._id,
-          whatsApp: newPhone
-        })
+        body: JSON.stringify(updatedData)
       });
+      
+      console.log('📥 Response status:', response.status);
+      
+      const result = await response.json();
+      console.log('📥 Response data:', result);
       
       if (response.ok) {
         setMessage('✅ WhatsApp number saved successfully!');
-        setWhatsappData({ ...whatsappData, whatsApp: newPhone });
+        setWhatsappData(updatedData);
         setIsEditing(false);
         setTimeout(() => setMessage(''), 3000);
       } else {
-        setMessage('❌ Error occurred while saving');
+        console.error('❌ Server error:', result);
+        setMessage(`❌ Error: ${result.error || result.message || 'Unknown error'}`);
       }
     } catch (error) {
-      setMessage('❌ Error occurred while saving');
+      console.error('❌ Save error:', error);
+      setMessage(`❌ Connection error: ${error.message}`);
     }
     setSaving(false);
   };

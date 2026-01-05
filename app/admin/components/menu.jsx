@@ -114,49 +114,42 @@ const addItemToCategory = (categoryId, newItem) => {
     const category = updatedData.categories.find(cat => cat.id === categoryId);
     
     if (category && category.items) {
-      // جمع كل الأرقام الصحيحة من IDs الموجودة
-      const existingNumbers = category.items
-        .map(item => {
-          if (!item.id || typeof item.id !== 'string') return 0;
-          const parts = item.id.split('_');
-          if (parts.length !== 2) return 0;
-          const num = parseInt(parts[1]);
-          return isNaN(num) ? 0 : num;
-        })
-        .filter(num => num > 0);
+      // جمع كل الـ IDs الموجودة في كل الـ items في كل الـ categories
+      const allExistingIds = new Set();
+      updatedData.categories.forEach(cat => {
+        if (cat.items && Array.isArray(cat.items)) {
+          cat.items.forEach(item => {
+            if (item.id) {
+              allExistingIds.add(item.id);
+            }
+          });
+        }
+      });
+      
+      // دالة لتوليد رقم عشوائي من 0 إلى 100000000000000
+      const generateRandomId = () => Math.floor(Math.random() * 100000000000001);
       
       let newId;
+      let attempts = 0;
+      const maxAttempts = 10000; // حد أقصى للمحاولات لتجنب infinite loop
       
-      // لو مفيش أرقام صحيحة، اختار رقم عشوائي
-      if (existingNumbers.length === 0) {
-        // دالة لتوليد رقم عشوائي من 0 إلى 100000
-        const generateRandomId = () => Math.floor(Math.random() * 100001);
+      // جرب رقم عشوائي لحد ما تلاقي واحد مش موجود
+      do {
+        newId = generateRandomId();
+        attempts++;
         
-        // جمع كل الـ IDs الموجودة للمقارنة
-        const existingIds = new Set(category.items.map(item => item.id).filter(Boolean));
-        
-        // جرب رقم عشوائي لحد ما تلاقي واحد مش موجود
-        let attempts = 0;
-        do {
-          newId = generateRandomId();
-          attempts++;
-          // لو جربت 1000 مرة ومفيش رقم متاح، استخدم timestamp
-          if (attempts > 1000) {
-            newId = Date.now() % 100001;
-            break;
-          }
-        } while (existingIds.has(`item_${newId}`));
-      } else {
-        // لو في أرقام صحيحة، خد أكبر رقم وزود عليه 1
-        newId = Math.max(...existingNumbers) + 1;
-      }
+        // لو جربت كتير أوي ومفيش رقم متاح، استخدم timestamp مع رقم عشوائي
+        if (attempts > maxAttempts) {
+          newId = Date.now() * 1000000 + Math.floor(Math.random() * 1000000);
+          break;
+        }
+      } while (allExistingIds.has(`item_${newId}`));
       
       newItem.id = `item_${newId}`;
       category.items.push(newItem);
       updateFullData(updatedData);
     }
   };
-
   const updateItemInCategory = (categoryId, itemId, updatedItem) => {
     const updatedData = JSON.parse(JSON.stringify(data));
     const category = updatedData.categories.find(cat => cat.id === categoryId);
@@ -170,19 +163,35 @@ const addItemToCategory = (categoryId, newItem) => {
     }
   };
 
-  const deleteItemFromCategory = (categoryId, itemId) => {
-    if (!confirm('⚠️ Are you sure you want to delete this item?')) return;
-    
-    const updatedData = JSON.parse(JSON.stringify(data));
-    const category = updatedData.categories.find(cat => cat.id === categoryId);
-    
-    if (category && category.items) {
-      category.items = category.items.filter(item => item.id !== itemId);
-      updateFullData(updatedData);
+// حط الـ function هنا 👇
+const fixDuplicateIds = () => {
+  if (!confirm('⚠️ هل تريد إصلاح الـ IDs المكررة؟ هذا سيغير IDs العناصر المكررة.')) return;
+  
+  const updatedData = JSON.parse(JSON.stringify(data));
+  const allIds = new Set();
+  
+  updatedData.categories.forEach(cat => {
+    if (cat.items && Array.isArray(cat.items)) {
+      cat.items.forEach(item => {
+        if (allIds.has(item.id)) {
+          let newId;
+          do {
+            newId = `item_${Math.floor(Math.random() * 100000000000001)}`;
+          } while (allIds.has(newId));
+          
+          console.log(`Fixed duplicate ID: ${item.id} -> ${newId}`);
+          item.id = newId;
+        }
+        allIds.add(item.id);
+      });
     }
-  };
+  });
+  
+  updateFullData(updatedData);
+  showMessage('✓ تم إصلاح الـ IDs المكررة بنجاح');
+};
 
-  const renderFieldLabel = (field) => {
+const renderFieldLabel = (field) => {
     const labels = {
       name: 'Name',
       price: 'Price',
@@ -438,6 +447,8 @@ const addItemToCategory = (categoryId, newItem) => {
     );
   }
 
+  
+
 const allItems = data.categories.flatMap(cat => 
   (cat.items || []).map(item => ({ 
     ...item, 
@@ -463,17 +474,26 @@ const allItems = data.categories.flatMap(cat =>
             <Menu size={28} />
             Menu Management
           </h2>
-          <div className="flex gap-3">
-            <button
-              onClick={fetchData}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 font-medium"
-              disabled={loading}
-            >
-              <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-              Refresh
-            </button>
-          </div>
+<div className="flex gap-3">
+  <button
+    onClick={fetchData}
+    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 font-medium"
+    disabled={loading}
+  >
+    <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+    Refresh
+  </button>
+  <button
+    onClick={fixDuplicateIds}
+    className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2.5 rounded-lg hover:bg-orange-700 font-medium"
+    disabled={loading}
+  >
+    🔧 Fix IDs
+  </button>
+</div>
         </div>
+
+        
         
         <input
           type="text"
@@ -1131,7 +1151,7 @@ const allItems = data.categories.flatMap(cat =>
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredItems
                 .filter(item => !selectedCategory || item.categoryId === selectedCategory)
                 .map((item) => {
@@ -1139,7 +1159,7 @@ const allItems = data.categories.flatMap(cat =>
                   
                   if (isEditing) {
                     return (
-                      <div key={item.id} className="md:col-span-2 lg:col-span-3 bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-l-8 border-blue-500">
+                      <div key={`${item.categoryId}-${item.id}`} className="md:col-span-2 lg:col-span-3 bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-l-8 border-blue-500">
                         <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-blue-900">
                           <Edit size={24} />
                           Editing: {item.en?.name}
