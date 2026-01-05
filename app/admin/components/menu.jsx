@@ -109,17 +109,49 @@ export default function MenuAdmin() {
     updateFullData(data);
   };
 
-  const addItemToCategory = (categoryId, newItem) => {
+const addItemToCategory = (categoryId, newItem) => {
     const updatedData = JSON.parse(JSON.stringify(data));
     const category = updatedData.categories.find(cat => cat.id === categoryId);
     
     if (category && category.items) {
-      const maxId = category.items.reduce((max, item) => {
-        const itemNum = parseInt(item.id.split('_')[1] || '0');
-        return Math.max(max, itemNum);
-      }, 0);
+      // جمع كل الأرقام الصحيحة من IDs الموجودة
+      const existingNumbers = category.items
+        .map(item => {
+          if (!item.id || typeof item.id !== 'string') return 0;
+          const parts = item.id.split('_');
+          if (parts.length !== 2) return 0;
+          const num = parseInt(parts[1]);
+          return isNaN(num) ? 0 : num;
+        })
+        .filter(num => num > 0);
       
-      newItem.id = `item_${maxId + 1}`;
+      let newId;
+      
+      // لو مفيش أرقام صحيحة، اختار رقم عشوائي
+      if (existingNumbers.length === 0) {
+        // دالة لتوليد رقم عشوائي من 0 إلى 100000
+        const generateRandomId = () => Math.floor(Math.random() * 100001);
+        
+        // جمع كل الـ IDs الموجودة للمقارنة
+        const existingIds = new Set(category.items.map(item => item.id).filter(Boolean));
+        
+        // جرب رقم عشوائي لحد ما تلاقي واحد مش موجود
+        let attempts = 0;
+        do {
+          newId = generateRandomId();
+          attempts++;
+          // لو جربت 1000 مرة ومفيش رقم متاح، استخدم timestamp
+          if (attempts > 1000) {
+            newId = Date.now() % 100001;
+            break;
+          }
+        } while (existingIds.has(`item_${newId}`));
+      } else {
+        // لو في أرقام صحيحة، خد أكبر رقم وزود عليه 1
+        newId = Math.max(...existingNumbers) + 1;
+      }
+      
+      newItem.id = `item_${newId}`;
       category.items.push(newItem);
       updateFullData(updatedData);
     }
@@ -406,9 +438,14 @@ export default function MenuAdmin() {
     );
   }
 
-  const allItems = data.categories.flatMap(cat => 
-    (cat.items || []).map(item => ({ ...item, categoryId: cat.id, categoryNameEn: cat.en.name }))
-  );
+const allItems = data.categories.flatMap(cat => 
+  (cat.items || []).map(item => ({ 
+    ...item, 
+    categoryId: cat.id, 
+    categoryNameEn: cat.en?.name || '',
+    categoryNameAr: cat.ar?.name || ''
+  }))
+);
 
   const filteredItems = searchTerm 
     ? allItems.filter(item => 
