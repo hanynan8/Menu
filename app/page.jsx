@@ -21,9 +21,14 @@ export default function Home() {
   const { language } = useLanguage();
   const { addToCart, getTotalItems, setIsCartOpen } = useCart();
   const { data: session } = useSession();
+  const [hours, setHours] = useState('');
+
 
   const totalItems = getTotalItems();
 
+  useEffect(() => {
+  getOpeningHours(language).then(setHours);
+}, [language]);
   
   useEffect(() => {
     const controller = new AbortController();
@@ -71,6 +76,14 @@ export default function Home() {
       return () => clearInterval(interval);
     }
   }, [data]);
+
+  const getOpeningHours = async (language = 'ar') => {
+  const response = await fetch('/api/data?collection=footer');
+  const data = await response.json();
+  
+  return data[0].footer[language].contact.hours;
+};
+
 
   // Intersection Observer for lazy loading images - MUST be before any conditional returns
   useEffect(() => {
@@ -929,7 +942,7 @@ const allItems = data.categories.flatMap(cat =>
                     {t.openingHours}
                   </p>
                   <p className="text-sm sm:text-base font-bold" style={{ color: colors.text }}>
-                    {t.dailyHours}
+                    {hours || '...'}
                   </p>
                 </div>
               </div>
