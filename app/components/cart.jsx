@@ -578,7 +578,7 @@ cartItems.forEach((item, index) => {
 
 message += `━━━━━━━━━━━━━━━━\n`;
 message += ` *Total Amount: ${getTotalPrice().toFixed(2)} AED*`;
-     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
       
       // استخدام location.href بدلاً من window.open للتوافق مع جميع الأجهزة
       window.location.href = whatsappUrl;

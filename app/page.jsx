@@ -68,17 +68,23 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    if (data?.heroSlider?.settings?.autoPlay) {
-      const interval = setInterval(() => {
-        setCurrentSlide(prev => 
-          prev === data.heroSlider.slides.length - 1 ? 0 : prev + 1
-        );
-      }, data.heroSlider.settings.interval || 5000);
-      return () => clearInterval(interval);
-    }
-  }, [data]);
-
+useEffect(() => {
+  if (!data?.heroSlider?.slides?.length) return;
+  
+  // استخدم settings لو موجودة، أو default values
+  const autoPlay = data.heroSlider.settings?.autoPlay ?? true; // default: true
+  const interval = data.heroSlider.settings?.interval ?? 5000; // default: 5 ثواني
+  
+  if (!autoPlay) return;
+  
+  const timer = setInterval(() => {
+    setCurrentSlide(prev => 
+      prev === data.heroSlider.slides.length - 1 ? 0 : prev + 1
+    );
+  }, interval);
+  
+  return () => clearInterval(timer);
+}, [data]);
 const getOpeningHours = async (language = 'ar') => {
   try {
     const response = await fetch('/api/data?collection=footer');
